@@ -24,7 +24,7 @@ cross_validation_function <- function(k,
   #Solving the lasso problem without the kth fold
   sigma_train <- list_matrices_lasso[[k]]
   rho_train <- list_rho_lasso[[k]] 
-  coef_lambda = LassoShooting.homemade(n=n, p=p,lambda=lambda_step, XX=sigma_train, Xy=rho_train, beta.start=beta_start)$coefficients
+  coef_lambda = lasso_covariance(n=n, p=p,lambda=lambda_step, XX=sigma_train, Xy=rho_train, beta.start=beta_start)$coefficients
   
   #Calculating the error on the remaining fold
   sigma_test <- list_matrices_error[[k]]
@@ -94,7 +94,7 @@ pathwise_coordinate_descent <- function(Z,
   
   lambda_max <- lambda_max(Z,y,n,ratio_matrix,noise)
   lambda_min <- lambda.factor*lambda_max
-  lambda_list <- lseq(lambda_max,lambda_min,step)
+  lambda_list <- emdbook::lseq(lambda_max,lambda_min,step)
   beta_start <- rep(0,p)
   best.lambda <- lambda_max
   beta.opt <- beta_start
@@ -129,13 +129,13 @@ pathwise_coordinate_descent <- function(Z,
                                                            list_rho_error,
                                                            beta_start))
     error = mean(out)
-    sd_low = quantile(out, probs = c(0.1))
-    sd_high = quantile(out, probs = c(0.9))
+    sd_low = stats::quantile(out, probs = c(0.1))
+    sd_high = stats::quantile(out, probs = c(0.9))
     error_list[i,1] <- error
     error_list[i,2] <- sd_low
     error_list[i,3] <- sd_high
-    error_list[i,4] <- sd(out)
-    coef_tot = LassoShooting.homemade(n=n, p=p, lambda=lambda_step, XX=ZZ, Xy=Zy, beta.start = beta_start)$coefficients
+    error_list[i,4] <- stats::sd(out)
+    coef_tot = lasso_covariance(n=n, p=p, lambda=lambda_step, XX=ZZ, Xy=Zy, beta.start = beta_start)$coefficients
     beta_start <- coef_tot
     matrix_beta[i,] <- beta_start
     

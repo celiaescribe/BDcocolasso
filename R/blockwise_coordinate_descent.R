@@ -141,7 +141,7 @@ blockwise_coordinate_descent <- function(Z,
   
   lambda_max <- lambda_max.coordinate_descent(Z,y,n,p1,p2,ratio_matrix,noise)
   lambda_min <- lambda.factor*lambda_max
-  lambda_list <- lseq(lambda_max,lambda_min,step)
+  lambda_list <- emdbook::lseq(lambda_max,lambda_min,step)
   beta1.start <- rep(0,p1)
   beta2.start <- rep(0,p2)
   beta.start <- c(beta1.start,beta2.start)
@@ -155,7 +155,7 @@ blockwise_coordinate_descent <- function(Z,
   matrix_beta <- matrix(0,step,p)
   
   ### Creating the K matrices we are going to use for cross validation
-  output = cv_covariance_matrices.block_descent(K=K, mat=Z, y=y, p=p, p1=p1, p2=p2, mu=mu, 
+  output = cv_covariance_matrices_block_descent(K=K, mat=Z, y=y, p=p, p1=p1, p2=p2, mu=mu, 
                                                 tau=tau, ratio_matrix = ratio_matrix, etol=etol, noise = noise)
   list_PSD_lasso = output$list_PSD_lasso
   list_PSD_error = output$list_PSD_error
@@ -192,12 +192,12 @@ blockwise_coordinate_descent <- function(Z,
                                                                          beta2.start,
                                                                          noise=noise))
     error = mean(out)
-    sd_low = quantile(out, probs = c(0.1))
-    sd_high = quantile(out, probs = c(0.9))
+    sd_low = stats::quantile(out, probs = c(0.1))
+    sd_high = stats::quantile(out, probs = c(0.9))
     error_list[i,1] <- error
     error_list[i,2] <- sd_low
     error_list[i,3] <- sd_high
-    error_list[i,4] <- sd(out)
+    error_list[i,4] <- stats::sd(out)
     out = lasso_covariance_block(n=n, p1=p1, p2=p2, X1=X1, Z2=Z2, y=y, sigma1=sigma1, sigma2=sigma2, lambda=lambda_step, 
                                  noise=noise, ratio_matrix = ratio_matrix, beta1.start = beta1.start, beta2.start = beta2.start)
     beta1 <- out$coefficients.beta1

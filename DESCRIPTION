@@ -16,4 +16,8 @@ Suggests:
 RoxygenNote: 6.1.1
 Imports: 
     emdbook,
-    matrixcalc
+    matrixcalc,
+    ggplot2,
+    glmnet,
+    stats,
+    rlist

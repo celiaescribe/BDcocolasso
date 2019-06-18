@@ -3,7 +3,6 @@
 #' Solve the least squares loss with lasso penalty written in a form with the covariance matrix : \eq{\frac{1}{2} \beta^{'} \Sigma \beta - \rho^{'} \beta + \lambda \|\beta\|_1}
 #'
 #' @param n Number of samples of the design matrix
-#' @param p Number of features of the matrix
 #' @param p1 Number of uncorrupted predictors
 #' @param p2 Number of corrupted predictors
 #' @param X1 first block of the design matrix corresponding to uncorrupted features
@@ -78,7 +77,7 @@ lasso_covariance_block <- function(n,
       Xy1 <- 1/n * t(X1) %*% (y - Z2_tilde %*% beta2 )
     }
     # Xy1 <- 1/n * t(X1) %*% (y - Z2 %*% beta2)
-    beta1 <- LassoShooting.homemade(n=n, p=p1, lambda=lambda, XX=sigma1, Xy = Xy1, beta.start = beta1.old)$coefficients
+    beta1 <- lasso_covariance(n=n, p=p1, lambda=lambda, XX=sigma1, Xy = Xy1, beta.start = beta1.old)$coefficients
     
     
     # Second step of the block descent : dealing with corrupted predictors
@@ -87,7 +86,7 @@ lasso_covariance_block <- function(n,
     } else if ((noise == "missing") || (noise == "HM")){
       Xy2 <- 1/n * (t(Z2) %*% (y - X1 %*% beta1)) / diag(ratio_matrix)
     }
-    beta2 <- LassoShooting.homemade(n=n, p=p2, lambda=lambda, XX=sigma2, Xy = Xy2, beta.start = beta2.old)$coefficients
+    beta2 <- lasso_covariance(n=n, p=p2, lambda=lambda, XX=sigma2, Xy = Xy2, beta.start = beta2.old)$coefficients
     
     error_beta1[m,1] = sum(abs(beta1 - beta1.old))
     error_beta2[m,1] = sum(abs(beta2 - beta2.old))

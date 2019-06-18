@@ -60,7 +60,7 @@ cv_covariance_matrices_block_descent <- function(K,
     mat_corrupted <- mat[,start:p]
     mat_uncorrupted <- mat[,1:p1]
     cov_modified <- 1/n*t(mat_corrupted)%*%mat_corrupted - tau**2*diag(p2)
-    sigma_global_corrupted <- maxproj.cov(cov_modified,mu=mu, etol = etol)$mat
+    sigma_global_corrupted <- ADMM_proj(cov_modified,mu=mu, etol = etol)$mat
     sigma_global_uncorrupted <- 1/n * t(mat_uncorrupted)%*%mat_uncorrupted
     
     for (i in 1:K){
@@ -72,24 +72,24 @@ cv_covariance_matrices_block_descent <- function(K,
       #Calculating the nearest PSD cov matrix when we remove the kth fold, to resolve lasso problem during cross validation
       mat_train <- mat[-index,start:p]
       cov_modified_train <- 1/n_without_fold*t(mat_train)%*%mat_train - tau**2*diag(p2)
-      mat_cov_train <- maxproj.cov(cov_modified_train,mu=mu, etol = etol)$mat
-      list_PSD_lasso <- list.append(list_PSD_lasso,mat_cov_train)
+      mat_cov_train <- ADMM_proj(cov_modified_train,mu=mu, etol = etol)$mat
+      list_PSD_lasso <- rlist::list.append(list_PSD_lasso,mat_cov_train)
       
       #Calculating the nearest PSD cov matrix for the kth fold, to calculate the error on the problem solved without the kth fold
       mat_test <- mat[index,start:p]
       cov_modified_test <- 1/n_one_fold*t(mat_test)%*%mat_test - tau**2*diag(p2)
-      mat_cov_test <- maxproj.cov(cov_modified_test,mu=mu, etol = etol)$mat
-      list_PSD_error <- list.append(list_PSD_error,mat_cov_test)
+      mat_cov_test <- ADMM_proj(cov_modified_test,mu=mu, etol = etol)$mat
+      list_PSD_error <- rlist::list.append(list_PSD_error,mat_cov_test)
       
       #Calculating the cov matrix when we remove the kth fold, to resolve lasso problem during cross validation
       mat_train <- mat[-index,1:p1]
       cov_train <- 1/n_without_fold*t(mat_train)%*%mat_train
-      list_sigma_lasso <- list.append(list_sigma_lasso,cov_train)
+      list_sigma_lasso <- rlist::list.append(list_sigma_lasso,cov_train)
       
       #Calculating the cov matrix  for the kth fold, to calculate the error on the problem solved without the kth fold
       mat_test <- mat[index,1:p1]
       cov_test <- 1/n_one_fold*t(mat_test)%*%mat_test
-      list_sigma_error <- list.append(list_sigma_error,cov_test)
+      list_sigma_error <- rlist::list.append(list_sigma_error,cov_test)
       
       
       
@@ -100,13 +100,10 @@ cv_covariance_matrices_block_descent <- function(K,
     #We calculate the global nearest PSD cov matrix and the global surrogate rho, when we take into account the whole data set
     #mat_for_adjustment <- diag(probs*(1-probs),p,p) + (1-probs) %*% t(1 - probs)
     print("Doing the global data")
-    # cov_modified <- 1/n*t(mat)%*%mat / mat_for_adjustment
-    # sigma_global <- maxproj.cov(cov_modified,mu=mu, etol = etol)$mat
-    # rho_global <- 1/n*t(mat)%*%y/(1-probs)
     mat_corrupted <- mat[,start:p]
     mat_uncorrupted <- mat[,1:p1]
     cov_modified <- 1/n*t(mat_corrupted)%*%mat_corrupted / ratio_matrix
-    sigma_global_corrupted <- maxproj.cov(cov_modified,mu=mu, etol = etol)$mat
+    sigma_global_corrupted <- ADMM_proj(cov_modified,mu=mu, etol = etol)$mat
     sigma_global_uncorrupted <- 1/n * t(mat_uncorrupted)%*%mat_uncorrupted
     
     for (i in 1:K){
@@ -119,25 +116,25 @@ cv_covariance_matrices_block_descent <- function(K,
       mat_train <- mat[-index,start:p]
       # cov_modified_train <- 1/n_without_fold*t(train_mat)%*%train_mat / mat_for_adjustment
       cov_modified_train <- 1/n_without_fold*t(mat_train)%*%mat_train / ratio_matrix
-      mat_cov_train <- maxproj.cov(cov_modified_train,mu=mu, etol = etol)$mat
-      list_PSD_lasso <- list.append(list_PSD_lasso,mat_cov_train)
+      mat_cov_train <- ADMM_proj(cov_modified_train,mu=mu, etol = etol)$mat
+      list_PSD_lasso <- rlist::list.append(list_PSD_lasso,mat_cov_train)
       
       #Calculating the nearest PSD cov matrix for the kth fold, to calculate the error on the problem solved without the kth fold
       mat_test <- mat[index,start:p]
       # cov_modified_test <- 1/n_one_fold*t(test_mat)%*%test_mat / mat_for_adjustment
       cov_modified_test <- 1/n_one_fold*t(mat_test)%*%mat_test / ratio_matrix
-      mat_cov_test <- maxproj.cov(cov_modified_test,mu=mu, etol = etol)$mat
-      list_PSD_error <- list.append(list_PSD_error,mat_cov_test)
+      mat_cov_test <- ADMM_proj(cov_modified_test,mu=mu, etol = etol)$mat
+      list_PSD_error <- rlist::list.append(list_PSD_error,mat_cov_test)
       
       #Calculating the cov matrix when we remove the kth fold, to resolve lasso problem during cross validation
       mat_train <- mat[-index,1:p1]
       cov_train <- 1/n_without_fold*t(mat_train)%*%mat_train
-      list_sigma_lasso <- list.append(list_sigma_lasso,cov_train)
+      list_sigma_lasso <- rlist::list.append(list_sigma_lasso,cov_train)
       
       #Calculating the cov matrix  for the kth fold, to calculate the error on the problem solved without the kth fold
       mat_test <- mat[index,1:p1]
       cov_test <- 1/n_one_fold*t(mat_test)%*%mat_test
-      list_sigma_error <- list.append(list_sigma_error,cov_test)
+      list_sigma_error <- rlist::list.append(list_sigma_error,cov_test)
       
     }
   }

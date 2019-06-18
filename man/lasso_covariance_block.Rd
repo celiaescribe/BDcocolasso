@@ -37,8 +37,6 @@ lasso_covariance_block(n, p1, p2, X1, Z2, y, sigma1, sigma2, lambda,
 \item{beta1.start}{Initial value for the coefficients of uncorrupted features}
 
 \item{beta2.start}{Initial value for the coefficients of corrupted features}
-
-\item{p}{Number of features of the matrix}
 }
 \value{
 list containing \itemize{
