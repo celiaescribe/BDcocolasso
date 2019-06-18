@@ -26,7 +26,9 @@ cv_covariance_matrices(K, mat, y, p, mu, tau = NULL,
 \item{etol}{Tolerance used in the ADMM algorithm}
 
 \item{noise}{Type of setting chosen : additive or missing}
+
 }
+
 \value{
 list containing \itemize{
 \item \code{sigma_global} projected matrix for \code{mat}
@@ -36,10 +38,23 @@ list containing \itemize{
 \item \code{list_rho_lasso} list of the modified \code{rho} for \code{mat} deprived of the K-fold during cross validation
 \item \code{list_rho_error} list of the modified \code{rho} for the k-fold of \code{mat} 
 }
+
+
+OUTPUT_DESCRIPTION
 }
 \description{
 Creating projected nearest positive semi-definite covariance matrices for the cross validation step of the CoCoLasso
+
+FUNCTION_DESCRIPTION
+}
+\details{
+DETAILS
 }
 \examples{
+\dontrun{
+if(interactive()){
+ #EXAMPLE1
+ }
+}
 
 }

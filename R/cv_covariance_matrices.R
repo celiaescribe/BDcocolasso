@@ -1,16 +1,18 @@
-#' Projected covariance matrices for CoCoLasso
+
+#' Projected covariance matrices
 #'
 #' Creating projected nearest positive semi-definite covariance matrices for the cross validation step of the CoCoLasso
 #'
-#' @param K Number of folds for the cross validation
-#' @param mat Covariance matrix to be projected
-#' @param y Response vector
-#' @param p Number of predictors
-#' @param mu Penalty parameter for the ADMM algorithm.
-#' @param tau Standard error of the additive error matrix when the chosen setting is the additive error setting
-#' @param ratio_matrix Observation matrix used in the missing data setting
-#' @param etol Tolerance used in the ADMM algorithm
-#' @param noise Type of setting chosen : additive or missing
+#' @param K number of folds for the cross validation
+#' @param mat covariance matrix to be projected
+#' @param y response vector
+#' @param p number of predictors
+#' @param mu penalty parameter for the ADMM algorithm.
+#' @param tau standard error of the additive error matrix when the chosen setting is the additive error setting
+#' @param ratio_matrix observation matrix used in the missing data setting
+#' @etol tolerance used in the ADMM algorithm
+#' @param noise type of setting chosen : additive or missing
+
 #' 
 #' @return list containing \itemize{
 #' \item \code{sigma_global} projected matrix for \code{mat}
@@ -34,6 +36,7 @@ cv_covariance_matrices <- function(K,
                                    ratio_matrix=NULL,
                                    etol=1e-4,
                                    noise=c("additive","missing")){
+
   
   # calculate the K nearest PSD covariance matrices 
   #      in the cross validation process
