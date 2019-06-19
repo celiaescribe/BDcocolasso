@@ -1,4 +1,4 @@
-lambda_max <- function(Z,y,n,ratio_matrix=NULL,noise=c("additive","missing","HM")){
+lambda_max <- function(Z,y,n,ratio_matrix=NULL,noise=c("additive","missing")){
   
   if (noise == "additive"){
     rho_tilde <- 1/n*t(Z)%*%y
@@ -9,7 +9,15 @@ lambda_max <- function(Z,y,n,ratio_matrix=NULL,noise=c("additive","missing","HM"
   max(abs(rho_tilde))
 }
 
+rescale_without_NA <- function(j,Z){
+  m <- mean(Z[which(!is.na(Z[,j]), arr.ind = TRUE),j])
+  Z[,j] - m
+}
 
+change_NA_value <- function(j,Z){
+  Z[which(is.na(Z[,j]), arr.ind = TRUE),j] <- 0
+  Z[,j]
+}
 
 cross_validation_function <- function(k,
                                       n,
@@ -43,6 +51,11 @@ cross_validation_function <- function(k,
 #' @param y Response vector
 #' @param n Number of samples of the design matrix
 #' @param p Number of features of the matrix
+#' @param center.Z If TRUE, centers Z matrix without taking into account NAs values, and then change NAs to 0 value (in the
+#' missing data setting).
+#' @param scale.Z If TRUE, divides Z columns by their standard deviation
+#' @param center.y If TRUE, centers y
+#' @param scale.y If TRUE, divides y by its standard deviation
 #' @param lambda.factor Range of the lambda interval we are going to explore
 #' @param step Number of values of lambda in the interval we are going to test
 #' @param K Number of folds for the cross-validation
@@ -73,26 +86,88 @@ pathwise_coordinate_descent <- function(Z,
                                         y,
                                         n,
                                         p,
+                                        center.Z = TRUE,
+                                        scale.Z = TRUE,
+                                        center.y = TRUE,
+                                        scale.y = TRUE,
                                         lambda.factor=ifelse(dim(Z)[1] < dim(Z)[2],0.01,0.001),
                                         step=100,
                                         K=5,
                                         mu=10,
                                         tau = NULL,
-                                        ratio_matrix = NULL,
                                         etol= 1e-4,
                                         optTol = 1e-10,
                                         earlyStopping_max = 20,
-                                        noise=c("additive","missing","HM")){
+                                        noise=c("additive","missing")){
   
   
-  #General variables we are going to use in the function
-  n = nrow(Z)
-  p = ncol(Z)
+  nrows = nrow(Z)
+  ncols = ncol(Z)
+  
+  if(!(is.matrix(Z))){
+    stop("Z has to be a matrix")
+  }
+  if(!(is.matrix(y))){
+    stop("y has to be a matrix")
+  }
+  if(!is.null(tau) & !is.numeric(tau)){
+    stop("tau must be numeric")
+  }
+  if(n != nrows){
+    stop(paste("Number of rows in Z (", nrows, ") different from n(", n, ")"),sep="")
+  }
+  if(p != ncols){
+    stop(paste("Number of columns in Z (", ncols, ") different from p (", p, ")"),sep="")
+  }
+  if (nrows != dim(y)[1]){
+    stop(paste("Number of rows in Z (", nrows, ") different from number of rows in y (", dim(y)[1], ") "),sep="")
+  }
+  if (!is.numeric(y)) {
+    stop("The response y must be numeric. Factors must be converted to numeric")
+  }
+  if(lambda.factor >= 1){
+    stop("lambda factor should be smaller than 1")
+  }
+  
+  ratio_matrix = NULL
+  if (noise=="missing"){
+    ratio_matrix = matrix(0,p,p)
+    
+    for (i in 1:p){
+      for (j in i:p){
+        n_ij = length(intersect(which(!is.na(Z[,i])),which(!is.na(Z[,j]))))
+        ratio_matrix[i,j] = n_ij
+        ratio_matrix[j,i] = n_ij
+      }
+    }
+    ratio_matrix = ratio_matrix/n
+  }
+  
+  if (center.Z == TRUE){
+    if (scale.Z == TRUE){
+      Z = sapply(1:p, function(j)rescale_without_NA(j,Z))
+      Z = sapply(1:p, function(j)change_NA_value(j,Z))
+      Z = scale(Z, center = FALSE, scale = TRUE)
+    }else{
+      Z = sapply(1:p, function(j)rescale_without_NA(j,Z))
+      Z = sapply(1:p, function(j)change_NA_value(j,Z))
+    }
+  }
+  if (center.y == TRUE){
+    if (scale.y == TRUE){
+      y = scale(y, center = TRUE, scale = TRUE)
+    }else{
+      y = scale(y, center = TRUE, scale = FALSE)
+    }
+  }
+  
+
+  
   n_without_fold = n - floor(n/K)
   n_one_fold = floor(n/K)
   earlyStopping = step
-  
-  lambda_max <- lambda_max(Z,y,n,ratio_matrix,noise)
+
+  lambda_max <- lambda_max(Z=Z,y=y,n=n,ratio_matrix=ratio_matrix,noise=noise)
   lambda_min <- lambda.factor*lambda_max
   lambda_list <- emdbook::lseq(lambda_max,lambda_min,step)
   beta_start <- rep(0,p)
@@ -165,7 +240,7 @@ pathwise_coordinate_descent <- function(Z,
   df <- data.frame(lambda=lambda_list[1:earlyStopping], error=error_list[1:earlyStopping,])
   step.min <- which(df[,"error.1"] == best.error)
   sd.best <- df[step.min,"error.4"]
-  step.sd <- max(which(df[,"error.1"] > best.error + sd.best))
+  step.sd <- max(which(df[,"error.1"] > best.error + sd.best & df[,"lambda"] > df[step.min,"lambda"]))
   lambda.sd <- df[step.sd,"lambda"]
   beta.sd <- matrix_beta[step.sd,]
   

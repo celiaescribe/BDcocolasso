@@ -5,20 +5,41 @@ lambda_max.coordinate_descent <- function(Z,
                                           p1,
                                           p2,
                                           ratio_matrix=NULL,
-                                          noise=c("additive","missing","HM")){
+                                          noise=c("additive","missing")){
   start <- p1 + 1
   X1 <- Z[,1:p1]
   Z2 <- Z[,start:p]
   if (noise=="additive"){
     rho_tilde <- 1/n*t(Z)%*%y
     lambda <- max(abs(rho_tilde))
-  }else if ((noise=="missing") || (noise=="HM")){
+  }else{
     rho_tilde1 <- 1/n*t(X1)%*%y
     rho_tilde2 <- 1/n*t(Z2)%*%y/ diag(ratio_matrix)
     lambda = max(max(abs(rho_tilde1)),max(abs(rho_tilde2)))
   }
   lambda
 }
+
+scale_manual <- function(j,Z){
+  sd <- sd(Z[,j])
+  if (sd != 0){
+    return(Z[,j]/sd)
+  }else{
+    return (Z[,j])
+  }
+  
+}
+
+rescale_without_NA_block <- function(j,Z,p1){
+  m <- mean(Z[which(!is.na(Z[,p1 + j]), arr.ind = TRUE),p1+j])
+  Z[,p1 + j] - m
+}
+
+change_NA_value_block <- function(j,Z,p1){
+  Z[which(is.na(Z[,p1 + j]), arr.ind = TRUE),j + p1] <- 0
+  Z[,p1 + j]
+}
+
 
 cross_validation_function.block_descent <- function(k,
                                                     Z,
@@ -38,7 +59,7 @@ cross_validation_function.block_descent <- function(k,
                                                     ratio_matrix=NULL,
                                                     beta1.start,
                                                     beta2.start,
-                                                    noise=c("missing","additive")){
+                                                    noise){
   
   ### Calculating the error for the design matrix without the kth fold
   start = p1 + 1
@@ -66,9 +87,7 @@ cross_validation_function.block_descent <- function(k,
   if (noise == "additive"){
     rho_2 <- 1/ n_one_fold * t(Z2_cv_test) %*% y_cv_test 
     sigma3 <- 1/ n_one_fold * t(Z2_cv_test) %*% X1_cv_test %*% beta1.lambda
-  }else if ((noise== "missing") || (noise=="HM")){
-    # rho_2 <- 1/ n_one_fold * (t(Z2_cv_test) %*% y_cv_test) / diag(ratio_matrix)
-    # sigma3 <- 1/ n_one_fold * (t(Z2_cv_test) %*% X1_cv_test %*% beta1.lambda) / diag(ratio_matrix)
+  }else{
     Z2_tilde <- sapply(1:p2,function(j)Z2_cv_test[,j] / diag(ratio_matrix)[j])
     rho_2 <- 1/ n_one_fold * (t(Z2_tilde) %*% y_cv_test) 
     sigma3 <- 1/ n_one_fold * (t(Z2_tilde) %*% X1_cv_test %*% beta1.lambda) 
@@ -88,12 +107,16 @@ cross_validation_function.block_descent <- function(k,
 #' @param p Number of features of the matrix
 #' @param p1 Number of uncorrupted predictors
 #' @param p2 Number of corrupted predictors
+#' @param center.Z If TRUE, centers Z matrix without taking into account NAs values, and then change NAs to 0 value (in the
+#' missing data setting).
+#' @param scale.Z If TRUE, divides Z columns by their standard deviation
+#' @param center.y If TRUE, centers y
+#' @param scale.y If TRUE, divides y by its standard deviation
 #' @param lambda.factor Range of the lambda interval we are going to explore
 #' @param step Number of values of lambda in the interval we are going to test
 #' @param K Number of folds for the cross-validation
 #' @param mu Penalty parameter for the ADMM algorithm
 #' @param tau Standard deviation for the additive error matrix in the additive error setting (NULL in the missing data setting)
-#' @param ratio_matrix Observation matrix used in the missing data setting
 #' @param etol Tolerance parameter for the ADMM algorithm
 #' @param optTol Tolerance parameter for the convergence of the error in the pathwise coordinate descent
 #' @param earlyStopping_max Number of iterations allowed when error starts increasing
@@ -120,26 +143,93 @@ blockwise_coordinate_descent <- function(Z,
                                          p,
                                          p1,
                                          p2,
+                                         center.Z = TRUE,
+                                         scale.Z = TRUE,
+                                         center.y = TRUE,
+                                         scale.y = TRUE,
                                          lambda.factor=ifelse(dim(Z)[1] < dim(Z)[2],0.01,0.001),
                                          step=100,
                                          K=4,
                                          mu=10,
                                          tau = NULL,
-                                         ratio_matrix = NULL,
                                          etol= 1e-4,
                                          optTol = 1e-5,
                                          earlyStopping_max = 10,
-                                         noise=c("additive","missing","HM")){
+                                         noise=c("additive","missing")){
   
-  
+  nrows = nrow(Z)
+  ncols = ncol(Z)
 
+  if(!(is.matrix(Z))){
+    stop("Z has to be a matrix")
+  }
+  if(!(is.matrix(y))){
+    stop("y has to be a matrix")
+  }
+  if(!is.null(tau) & !is.numeric(tau)){
+    stop("tau must be numeric")
+  }
+  if(n != nrows){
+    stop(paste("Number of rows in Z (", nrows, ") different from n(", n, ")"),sep="")
+  }
+  if(p != ncols){
+    stop(paste("Number of columns in Z (", ncols, ") different from p (", p, ")"),sep="")
+  }
+  if (nrows != dim(y)[1]){
+    stop(paste("Number of rows in Z (", nrows, ") different from number of rows in y (", dim(y)[1], ") "),sep="")
+  }
+  if (!is.numeric(y)) {
+    stop("The response y must be numeric. Factors must be converted to numeric")
+  }
+  if(lambda.factor >= 1){
+    stop("lambda factor should be smaller than 1")
+  }
+  if(p1 + p2 != p){
+    stop(paste("Sum of p1 and p2 (", p1 + p2, ") should be equal to p (", p, ")"),sep="")
+  }
+  
   #General variables we are going to use in the function
   start = 1 + p1
   n_without_fold = n - floor(n/K)
   n_one_fold = floor(n/K)
   earlyStopping = step
   
-  lambda_max <- lambda_max.coordinate_descent(Z,y,n,p1,p2,ratio_matrix,noise)
+  ratio_matrix = NULL
+  if (noise=="missing"){
+    ratio_matrix = matrix(0,p2,p2)
+    
+    for (i in 1:p2){
+      for (j in i:p2){
+        n_ij = length(intersect(which(!is.na(Z[,p1 + i])),which(!is.na(Z[,p1 + j]))))
+        ratio_matrix[i,j] = n_ij
+        ratio_matrix[j,i] = n_ij
+      }
+    }
+    ratio_matrix = ratio_matrix/n
+  }
+  
+  if (center.Z == TRUE){
+    if (scale.Z == TRUE){
+      Z[,start:p] = sapply(1:p2, function(j)rescale_without_NA_block(j,Z,p1))
+      Z[,start:p] = sapply(1:p2, function(j)change_NA_value_block(j,Z,p1))
+      Z[,1:p1] = scale(Z[,1:p1], center = TRUE, scale = FALSE)
+      Z <- sapply(1:p, function(j)scale_manual(j,Z))
+    }else{
+      Z_[,start:p] = sapply(1:p2, function(j)rescale_without_NA_block(j,Z,p1))
+      Z[,start:p] = sapply(1:p2, function(j)change_NA_value_block(j,Z,p1))
+      Z[,1:p1] = scale(Z[,1:p1], center = TRUE, scale = FALSE)
+    }
+  }
+  
+  if (center.y == TRUE){
+    if (scale.y == TRUE){
+      y = scale(y, center = TRUE, scale = TRUE)
+    }else{
+      y = scale(y, center = TRUE, scale = FALSE)
+    }
+  }
+  
+  lambda_max <- lambda_max.coordinate_descent(Z=Z,y=y,n=n,p=p,p1=p1,p2=p2,ratio_matrix=ratio_matrix,noise=noise)
   lambda_min <- lambda.factor*lambda_max
   lambda_list <- emdbook::lseq(lambda_max,lambda_min,step)
   beta1.start <- rep(0,p1)
