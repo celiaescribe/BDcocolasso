@@ -32,6 +32,8 @@ l1proj<-function(v, b){
 #' }
 #' 
 #' @example 
+#' M = matrix(-1,20,20)
+#' mat_proj <- BDcocolasso::ADMM_proj(mat=M)$mat
 #' 
 #' @export
 #' 

@@ -132,7 +132,15 @@ cross_validation_function.block_descent <- function(k,
 #' \item \code{earlyStopping} Integer containing the value of iteration when early stopping happens
 #' }
 #' 
+#' @details It is highly recommended to use center.Z = TRUE for the algorithm to work in the case of missing data. 
+#' It is recommended to use center.Z = TRUE, scale.Z = TRUE, center.y = TRUE and scale.y = TRUE for both convergence
+#' and interpretability reasons. The use of center.Z = TRUE in the additive error setting can be subject to discussion,
+#' as it may introduce bias in the algorithm.
+#' For computing speed reasons, if model is not converging or running slow, consider changing \code{mu}, decreasing
+#' \code{etol} or \code{optTol} or decreasing \code{earlyStopping_max}
 #' @example 
+#' 
+#' @seealso \url{https://arxiv.org/pdf/1510.07123.pdf}
 #' 
 #' @export
 #' 
@@ -185,6 +193,12 @@ blockwise_coordinate_descent <- function(Z,
   }
   if(p1 + p2 != p){
     stop(paste("Sum of p1 and p2 (", p1 + p2, ") should be equal to p (", p, ")"),sep="")
+  }
+  if(mu>500 || mu<1){
+    warning(paste("Mu value (", mu, ") is not in the usual range (10-500)"))
+  }
+  if (n %% K != 0){
+    stop("K should be a divider of n")
   }
   
   #General variables we are going to use in the function
@@ -340,5 +354,15 @@ blockwise_coordinate_descent <- function(Z,
   data_beta <- data.frame(lambda = lambda_list[1:earlyStopping])
   
   data_beta <- cbind(data_beta,data_intermediate)
-  return(list(lambda.opt = best.lambda, lambda.sd=lambda.sd, beta.opt = beta.opt, beta.sd=beta.sd, data_error=df, data_beta = data_beta, earlyStopping = earlyStopping))
-}
+  
+  fit = list(
+    lambda.opt = best.lambda,
+    lambda.sd = lambda.sd,
+    beta.opt = beta.opt,
+    beta.sd = beta.sd,
+    data_error = df,
+    data_beta = data_beta,
+    earlyStopping = earlyStopping
+  )
+  return(fit)
+  }

@@ -29,6 +29,3 @@ list containing \itemize{
 \description{
 Finds the nearest positive semi-definite matrix with respect to the max norm
 }
-\examples{
-
-}

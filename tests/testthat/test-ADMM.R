@@ -11,7 +11,7 @@ change_NA_value <- function(j,Z){
 }
 
 data("simulated_data_missing")
-Z = simulated_data[,2:dim(simulated_data)[2]]
+Z = simulated_data_missing[,2:dim(simulated_data_missing)[2]]
 Z = as.matrix(Z)
 n <- dim(Z)[1]
 p <- dim(Z)[2]

@@ -65,6 +65,17 @@ list containing \itemize{
 \description{
 Implement blockwise coordinate descent algorithm. Best penalty value is evaluated through cross-validation.
 }
+\details{
+It is highly recommended to use center.Z = TRUE for the algorithm to work in the case of missing data. 
+It is recommended to use center.Z = TRUE, scale.Z = TRUE, center.y = TRUE and scale.y = TRUE for both convergence
+and interpretability reasons. The use of center.Z = TRUE in the additive error setting can be subject to discussion,
+as it may introduce bias in the algorithm.
+For computing speed reasons, if model is not converging or running slow, consider changing \code{mu}, decreasing
+\code{etol} or \code{optTol} or decreasing \code{earlyStopping_max}
+}
 \examples{
 
+}
+\seealso{
+\url{https://arxiv.org/pdf/1510.07123.pdf}
 }

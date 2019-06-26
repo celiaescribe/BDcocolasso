@@ -87,6 +87,8 @@ cross_validation_function <- function(k,
 #' 
 #' @example 
 #' 
+#' @seealso \url{https://arxiv.org/pdf/1510.07123.pdf}
+#' 
 #' @export
 #' 
 
@@ -105,12 +107,13 @@ pathwise_coordinate_descent <- function(Z,
                                         tau = NULL,
                                         etol= 1e-4,
                                         optTol = 1e-10,
-                                        earlyStopping_max = 20,
+                                        earlyStopping_max = 10,
                                         noise=c("additive","missing")){
   
   
   nrows = nrow(Z)
   ncols = ncol(Z)
+  
   
   if(!(is.matrix(Z))){
     stop("Z has to be a matrix")
@@ -138,6 +141,9 @@ pathwise_coordinate_descent <- function(Z,
   }
   if (n %% K != 0){
     stop("K should be a divider of n")
+  }
+  if(mu>500 || mu<1){
+    warning(paste("Mu value (", mu, ") is not in the usual range (10-500)"))
   }
   
   ratio_matrix = NULL
@@ -270,7 +276,7 @@ pathwise_coordinate_descent <- function(Z,
   data_beta <- data.frame(lambda = lambda_list[1:earlyStopping])
   
   data_beta <- cbind(data_beta,data_intermediate)
-  out <- list(
+  fit <- list(
     lambda.opt = best.lambda,
     lambda.sd = lambda.sd,
     beta.opt = beta.opt,
@@ -280,6 +286,5 @@ pathwise_coordinate_descent <- function(Z,
     earlyStopping = earlyStopping,
     vnames = colnames(Z)
   )
-  class(out) <- "cocolasso"
-  return(out)
+  return(fit)
 }
