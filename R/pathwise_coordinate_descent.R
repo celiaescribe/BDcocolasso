@@ -61,7 +61,6 @@ cross_validation_function <- function(k,
 #' @param K Number of folds for the cross-validation
 #' @param mu Penalty parameter for the ADMM algorithm
 #' @param tau Standard deviation for the additive error matrix in the additive error setting (NULL in the missing data setting)
-#' @param ratio_matrix Observation matrix used in the missing data setting
 #' @param etol Tolerance parameter for the ADMM algorithm
 #' @param optTol Tolerance parameter for the convergence of the error in the pathwise coordinate descent
 #' @param earlyStopping_max Number of iterations allowed when error starts increasing
@@ -75,7 +74,16 @@ cross_validation_function <- function(k,
 #' \item \code{data_error} Dataframe containing errors and their standard deviation for each iteration of the algorithm
 #' \item \code{data_beta} Dataframe containing the values of beta for each iteration of the algorithm
 #' \item \code{earlyStopping} Integer containing the value of iteration when early stopping happens
+#' \item \code{vnames} Names of the features
 #' }
+#' 
+#' @details It is highly recommended to use center.Z = TRUE for the algorithm to work in the case of missing data. 
+#' It is recommended to use center.Z = TRUE, scale.Z = TRUE, center.y = TRUE and scale.y = TRUE for both convergence
+#' and interpretability reasons. The use of center.Z = TRUE in the additive error setting can be subject to discussion,
+#' as it may introduce bias in the algorithm.
+#' For computing speed reasons, if model is not converging or running slow, consider changing \code{mu}, decreasing
+#' \code{etol} or \code{optTol} or decreasing \code{earlyStopping_max}
+#'   
 #' 
 #' @example 
 #' 
@@ -92,7 +100,7 @@ pathwise_coordinate_descent <- function(Z,
                                         scale.y = TRUE,
                                         lambda.factor=ifelse(dim(Z)[1] < dim(Z)[2],0.01,0.001),
                                         step=100,
-                                        K=5,
+                                        K=4,
                                         mu=10,
                                         tau = NULL,
                                         etol= 1e-4,
@@ -128,6 +136,9 @@ pathwise_coordinate_descent <- function(Z,
   if(lambda.factor >= 1){
     stop("lambda factor should be smaller than 1")
   }
+  if (n %% K != 0){
+    stop("K should be a divider of n")
+  }
   
   ratio_matrix = NULL
   if (noise=="missing"){
@@ -152,12 +163,21 @@ pathwise_coordinate_descent <- function(Z,
       Z = sapply(1:p, function(j)rescale_without_NA(j,Z))
       Z = sapply(1:p, function(j)change_NA_value(j,Z))
     }
+  }else{
+    if(scale.Z == TRUE){
+      Z = scale(Z, center = FALSE, scale = TRUE)
+    }
   }
+  
   if (center.y == TRUE){
     if (scale.y == TRUE){
       y = scale(y, center = TRUE, scale = TRUE)
     }else{
       y = scale(y, center = TRUE, scale = FALSE)
+    }
+  }else{
+    if (scale.y == TRUE){
+      y = scale(y, center = FALSE, scale = TRUE)
     }
   }
   
@@ -250,5 +270,16 @@ pathwise_coordinate_descent <- function(Z,
   data_beta <- data.frame(lambda = lambda_list[1:earlyStopping])
   
   data_beta <- cbind(data_beta,data_intermediate)
-  return(list(lambda.opt = best.lambda, lambda.sd = lambda.sd, beta.opt = beta.opt, beta.sd=beta.sd, data_error=df, data_beta=data_beta, earlyStopping = earlyStopping))
+  out <- list(
+    lambda.opt = best.lambda,
+    lambda.sd = lambda.sd,
+    beta.opt = beta.opt,
+    beta.sd = beta.sd,
+    data_error = df,
+    data_beta = data_beta,
+    earlyStopping = earlyStopping,
+    vnames = colnames(Z)
+  )
+  class(out) <- "cocolasso"
+  return(out)
 }

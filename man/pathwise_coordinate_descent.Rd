@@ -4,10 +4,12 @@
 \alias{pathwise_coordinate_descent}
 \title{Pathwise coordinate descent}
 \usage{
-pathwise_coordinate_descent(Z, y, n, p, lambda.factor = ifelse(dim(Z)[1]
-  < dim(Z)[2], 0.01, 0.001), step = 100, K = 5, mu = 10,
-  tau = NULL, ratio_matrix = NULL, etol = 1e-04, optTol = 1e-10,
-  earlyStopping_max = 20, noise = c("additive", "missing", "HM"))
+pathwise_coordinate_descent(Z, y, n, p, center.Z = TRUE,
+  scale.Z = TRUE, center.y = TRUE, scale.y = TRUE,
+  lambda.factor = ifelse(dim(Z)[1] < dim(Z)[2], 0.01, 0.001),
+  step = 100, K = 4, mu = 10, tau = NULL, etol = 1e-04,
+  optTol = 1e-10, earlyStopping_max = 20, noise = c("additive",
+  "missing"))
 }
 \arguments{
 \item{Z}{Corrupted design matrix (with additive error or missing data)}
@@ -18,6 +20,15 @@ pathwise_coordinate_descent(Z, y, n, p, lambda.factor = ifelse(dim(Z)[1]
 
 \item{p}{Number of features of the matrix}
 
+\item{center.Z}{If TRUE, centers Z matrix without taking into account NAs values, and then change NAs to 0 value (in the
+missing data setting).}
+
+\item{scale.Z}{If TRUE, divides Z columns by their standard deviation}
+
+\item{center.y}{If TRUE, centers y}
+
+\item{scale.y}{If TRUE, divides y by its standard deviation}
+
 \item{lambda.factor}{Range of the lambda interval we are going to explore}
 
 \item{step}{Number of values of lambda in the interval we are going to test}
@@ -27,8 +38,6 @@ pathwise_coordinate_descent(Z, y, n, p, lambda.factor = ifelse(dim(Z)[1]
 \item{mu}{Penalty parameter for the ADMM algorithm}
 
 \item{tau}{Standard deviation for the additive error matrix in the additive error setting (NULL in the missing data setting)}
-
-\item{ratio_matrix}{Observation matrix used in the missing data setting}
 
 \item{etol}{Tolerance parameter for the ADMM algorithm}
 
@@ -47,10 +56,19 @@ list containing \itemize{
 \item \code{data_error} Dataframe containing errors and their standard deviation for each iteration of the algorithm
 \item \code{data_beta} Dataframe containing the values of beta for each iteration of the algorithm
 \item \code{earlyStopping} Integer containing the value of iteration when early stopping happens
+\item \code{vnames} Names of the features
 }
 }
 \description{
 Implement pathwise coordinate descent algorithm. Best penalty value is evaluated through cross-validation.
+}
+\details{
+It is highly recommended to use center.Z = TRUE for the algorithm to work in the case of missing data. 
+It is recommended to use center.Z = TRUE, scale.Z = TRUE, center.y = TRUE and scale.y = TRUE for both convergence
+and interpretability reasons. The use of center.Z = TRUE in the additive error setting can be subject to discussion,
+as it may introduce bias in the algorithm.
+For computing speed reasons, if model is not converging or running slow, consider changing \code{mu}, decreasing
+\code{etol} or \code{optTol} or decreasing \code{earlyStopping_max}
 }
 \examples{
 

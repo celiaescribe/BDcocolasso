@@ -4,11 +4,12 @@
 \alias{blockwise_coordinate_descent}
 \title{Blockwise coordinate descent}
 \usage{
-blockwise_coordinate_descent(Z, y, n, p, p1, p2,
+blockwise_coordinate_descent(Z, y, n, p, p1, p2, center.Z = TRUE,
+  scale.Z = TRUE, center.y = TRUE, scale.y = TRUE,
   lambda.factor = ifelse(dim(Z)[1] < dim(Z)[2], 0.01, 0.001),
-  step = 100, K = 4, mu = 10, tau = NULL, ratio_matrix = NULL,
-  etol = 1e-04, optTol = 1e-05, earlyStopping_max = 10,
-  noise = c("additive", "missing", "HM"))
+  step = 100, K = 4, mu = 10, tau = NULL, etol = 1e-04,
+  optTol = 1e-05, earlyStopping_max = 10, noise = c("additive",
+  "missing"))
 }
 \arguments{
 \item{Z}{Corrupted design matrix (with additive error or missing data)}
@@ -23,6 +24,15 @@ blockwise_coordinate_descent(Z, y, n, p, p1, p2,
 
 \item{p2}{Number of corrupted predictors}
 
+\item{center.Z}{If TRUE, centers Z matrix without taking into account NAs values, and then change NAs to 0 value (in the
+missing data setting).}
+
+\item{scale.Z}{If TRUE, divides Z columns by their standard deviation}
+
+\item{center.y}{If TRUE, centers y}
+
+\item{scale.y}{If TRUE, divides y by its standard deviation}
+
 \item{lambda.factor}{Range of the lambda interval we are going to explore}
 
 \item{step}{Number of values of lambda in the interval we are going to test}
@@ -32,8 +42,6 @@ blockwise_coordinate_descent(Z, y, n, p, p1, p2,
 \item{mu}{Penalty parameter for the ADMM algorithm}
 
 \item{tau}{Standard deviation for the additive error matrix in the additive error setting (NULL in the missing data setting)}
-
-\item{ratio_matrix}{Observation matrix used in the missing data setting}
 
 \item{etol}{Tolerance parameter for the ADMM algorithm}
 

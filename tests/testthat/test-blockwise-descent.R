@@ -26,7 +26,7 @@ n_additive <- dim(Z_additive)[1]
 p_additive <- dim(Z_additive)[2]
 y_additive = as.matrix(y_additive)
 
-output_additive = BDcocolasso::blockwise_coordinate_descent(Z=Z_additive,y=y_additive,n=n_additive,p=p_additive,p1=p1,p2=p2,step=100,K=4,mu=10,tau=0.3,noise="additive")
+output_additive = BDcocolasso::blockwise_coordinate_descent(Z=Z_additive,y=y_additive,n=n_additive,p=p_additive,p1=p1,p2=p2,center.Z = FALSE, step=100,K=4,mu=10,tau=0.3,noise="additive")
 beta_additive <- output_additive$beta.opt
 beta_additive <- as.matrix(beta_additive)
 beta.sd_additive <- output_additive$beta.sd

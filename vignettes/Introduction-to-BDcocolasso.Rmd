@@ -1,0 +1,123 @@
+---
+title: "Introduction-to-BDcocolasso"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction-to-BDcocolasso}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Quick Start
+
+We will use the simulated data which ships with the package and can be loaded via:
+
+```{r}
+library(BDcocolasso)
+data("simulated_data_missing")
+data("simulated_data_additive")
+data("simulated_data_missing_block")
+data("simulated_data_additive_block")
+```
+
+These datasets correspond to corrupted datasets in additive error setting and missing data setting, and to partially corrupted datasets in additive error setting and missing data setting. In the missing data setting, those datasets contain NAs values, whereas in the additive error setting, they do not contain NAs values but the covariates are measured with error.
+
+## CoCoLasso algorithm
+
+We can first perform classic CoCoLasso algorithm. To do that, the datasets must be converted to a matrix:
+
+```{r}
+y_missing <- simulated_data_missing[,1]
+Z_missing = simulated_data_missing[,2:dim(simulated_data_missing)[2]]
+Z_missing = as.matrix(Z_missing)
+n_missing <- dim(Z_missing)[1]
+p_missing <- dim(Z_missing)[2]
+y_missing = as.matrix(y_missing)
+```
+
+We can then fit the CoCoLasso model to our data:
+```{r}
+fit_missing = pathwise_coordinate_descent(Z=Z_missing,y=y_missing,n=n_missing,p=p_missing,step=100,K=4,mu=10,tau=NULL, etol = 1e-4,noise = "missing")
+```
+
+It is important to specify the chosen setting. Here, `noise` is equal to `missing` because we have NAs values in the dataset.
+
+It is then possible to visualize the solution path of the coefficients:
+```{r}
+plotCoef(fit_missing)
+```
+
+It is also possible to visualize the mean-squared error for all values of lambda:
+```{r}
+plotError(fit_missing)
+```
+
+On each of the plots, the left dashed line represent the optimum lambda, while the right dashed line represent the lambda corresponding to the one-standard-error rule.
+
+We can do the same with additive error setting :
+```{r}
+y_additive <- simulated_data_additive[,1]
+Z_additive = simulated_data_additive[,2:dim(simulated_data_additive)[2]]
+Z_additive = as.matrix(Z_additive)
+n_additive <- dim(Z_additive)[1]
+p_additive <- dim(Z_additive)[2]
+y_additive = as.matrix(y_additive)
+
+```
+
+Let's fit CoCoLasso:
+```{r}
+fit_additive = pathwise_coordinate_descent(Z=Z_additive,y=y_additive,n=n_additive,p=p_additive,center.Z = FALSE, step=100,K=4,mu=10,tau=0.3,etol = 1e-4,noise = "additive")
+
+```
+
+Here, we do not center Z because it is not necessary and it might lead to introducing bias, because of the additive error setting. It is very important to know (or estimate) \code{tau} parameter corresponding to the standard deviation of the error matrix. Without it, the algorithm cannot run.
+
+We can plot coefficients and the mean-squared-error:
+```{r}
+#plotCoef(fit_additive)
+#plotError(fit_additive)
+```
+
+## Block-Descent CoCoLasso algorithm
+
+The BDCoCoLasso algorithms functions the same way. We can fit the model for both datasets:
+```{r}
+p1 <- 180
+p2 <- 20
+y_missing <- simulated_data_missing_block[,1]
+Z_missing = simulated_data_missing_block[,2:dim(simulated_data_missing_block)[2]]
+Z_missing = as.matrix(Z_missing)
+n_missing <- dim(Z_missing)[1]
+p_missing <- dim(Z_missing)[2]
+y_missing = as.matrix(y_missing)
+fit_missing = blockwise_coordinate_descent(Z=Z_missing,y=y_missing,n=n_missing,p=p_missing,p1=p1,p2=p2,step=100,K=4,mu=10,tau=NULL,noise="missing")
+
+y_additive <- simulated_data_additive_block[,1]
+Z_additive = simulated_data_additive_block[,2:dim(simulated_data_additive_block)[2]]
+Z_additive = as.matrix(Z_additive)
+n_additive <- dim(Z_additive)[1]
+p_additive <- dim(Z_additive)[2]
+y_additive = as.matrix(y_additive)
+
+fit_additive = blockwise_coordinate_descent(Z=Z_additive,y=y_additive,n=n_additive,p=p_additive,p1=p1,p2=p2,center.Z = FALSE, step=100,K=4,mu=10,tau=0.3,noise="additive")
+
+
+```
+
+Note that the algorithm requires that the first p1 columns of Z are the uncorrupted covariates, while the last p2 columns are the corrupted covariates.
+
+We can plot the coefficients and the error for the missing data scenario:
+```{r}
+# plotCoef(fit_missing)
+# plotError(fit_missing)
+# plotCoef(fit_additive)
+# plotError(fit_additive)
+```
+

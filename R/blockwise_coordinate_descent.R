@@ -159,7 +159,6 @@ blockwise_coordinate_descent <- function(Z,
   
   nrows = nrow(Z)
   ncols = ncol(Z)
-
   if(!(is.matrix(Z))){
     stop("Z has to be a matrix")
   }
