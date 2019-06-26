@@ -26,7 +26,8 @@ data("simulated_data_missing_block")
 data("simulated_data_additive_block")
 ```
 
-These datasets correspond to corrupted datasets in additive error setting and missing data setting, and to partially corrupted datasets in additive error setting and missing data setting. In the missing data setting, those datasets contain NAs values, whereas in the additive error setting, they do not contain NAs values but the covariates are measured with error.
+These datasets correspond to corrupted datasets in additive error setting and missing data setting, and to partially corrupted datasets in additive error setting and missing data setting. In the missing data setting, those datasets contain NAs values, whereas in the additive error setting, they do not contain NAs values but the covariates are measured with error. 
+We will note that it is essential to know the standard deviation corresponding to the additive error matrix, in order to run the CoCoLasso algorithm.
 
 ## CoCoLasso algorithm
 
