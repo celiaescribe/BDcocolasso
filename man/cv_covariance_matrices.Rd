@@ -40,6 +40,3 @@ list containing \itemize{
 \description{
 Creating projected nearest positive semi-definite covariance matrices for the cross validation step of the CoCoLasso
 }
-\examples{
-
-}

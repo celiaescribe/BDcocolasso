@@ -4,7 +4,7 @@
 \alias{print.coco}
 \title{Print Method for \code{coco} object}
 \usage{
-\method{print}{coco}(object)
+\method{print}{coco}(x, ...)
 }
 \arguments{
 \item{x}{fitted \code{coco} object}
@@ -17,6 +17,12 @@ OUTPUT_DESCRIPTION
 \description{
 Print a summary of the \code{coco} path at each step along the
   path.
+}
+\details{
+R Source code file for predict, coef and print methods for the BDcoco package
+Author: Celia Escribe
+Created: 2019
+Updated: June 27, 2019
 }
 \seealso{
 \code{\link{coco}}

@@ -35,11 +35,29 @@ rescale_without_NA_block <- function(j,Z,p1){
   Z[,p1 + j] - m
 }
 
+mean_without_NA <- function(j,Z){
+  m <- mean(Z[which(!is.na(Z[,j]), arr.ind = TRUE),j])
+  m
+}
+
+sd_without_NA_block <- function(j,Z){
+  sd <- sd(Z[which(!is.na(Z[,j]), arr.ind = TRUE),j])
+  sd
+}
+
 change_NA_value_block <- function(j,Z,p1){
   Z[which(is.na(Z[,p1 + j]), arr.ind = TRUE),j + p1] <- 0
   Z[,p1 + j]
 }
 
+scale_manual_with_sd <- function(j,Z,v){
+  sd <- v[j]
+  if (sd != 0){
+    return(Z[,j]/sd)
+  }else{
+    return (Z[,j])
+  }
+}
 
 cross_validation_function.block_descent <- function(k,
                                                     Z,
@@ -138,7 +156,6 @@ cross_validation_function.block_descent <- function(k,
 #' as it may introduce bias in the algorithm.
 #' For computing speed reasons, if model is not converging or running slow, consider changing \code{mu}, decreasing
 #' \code{etol} or \code{optTol} or decreasing \code{earlyStopping_max}
-#' @example 
 #' 
 #' @seealso \url{https://arxiv.org/pdf/1510.07123.pdf}
 #' 
@@ -200,6 +217,9 @@ blockwise_coordinate_descent <- function(Z,
   if (n %% K != 0){
     stop("K should be a divider of n")
   }
+  if(noise=="missing" && center.Z == FALSE){
+    stop("When noise is equal to missing, it is required to center matrix Z. Use center.Z=TRUE.")
+  }
   
   #General variables we are going to use in the function
   start = 1 + p1
@@ -221,18 +241,30 @@ blockwise_coordinate_descent <- function(Z,
     ratio_matrix = ratio_matrix/n
   }
   
+  mean.Z = sapply(1:p, function(j)mean_without_NA(j,Z))
+  sd.Z <- sapply(1:p, function(j)sd_without_NA_block(j,Z))
+  
   if (center.Z == TRUE){
     if (scale.Z == TRUE){
       Z[,start:p] = sapply(1:p2, function(j)rescale_without_NA_block(j,Z,p1))
       Z[,start:p] = sapply(1:p2, function(j)change_NA_value_block(j,Z,p1))
       Z[,1:p1] = scale(Z[,1:p1], center = TRUE, scale = FALSE)
-      Z <- sapply(1:p, function(j)scale_manual(j,Z))
+      #Z <- sapply(1:p, function(j)scale_manual(j,Z))
+      Z = sapply(1:p, function(j)scale_manual_with_sd(j,Z,sd.Z))
     }else{
       Z_[,start:p] = sapply(1:p2, function(j)rescale_without_NA_block(j,Z,p1))
       Z[,start:p] = sapply(1:p2, function(j)change_NA_value_block(j,Z,p1))
       Z[,1:p1] = scale(Z[,1:p1], center = TRUE, scale = FALSE)
     }
+  }else{
+    if (scale.Z == TRUE){
+      #Z <- sapply(1:p, function(j)scale_manual(j,Z))
+      Z = sapply(1:p, function(j)scale_manual_with_sd(j,Z,sd.Z))
+    }
   }
+  
+  mean.y = mean(y)
+  sd.y = sd(y)
   
   if (center.y == TRUE){
     if (scale.y == TRUE){
@@ -340,10 +372,10 @@ blockwise_coordinate_descent <- function(Z,
       }
     }
   }
-  df <- data.frame(lambda=lambda_list[1:earlyStopping], error=error_list[1:earlyStopping,])
-  step.min <- which(df[,"error.1"] == best.error)
-  sd.best <- df[step.min,"error.4"]
-  step.sd <- max(which(df[,"error.1"] > best.error + sd.best & df[,"lambda"] > df[step.min,"lambda"]))
+  df <- data.frame(lambda=lambda_list[1:earlyStopping], error=error_list[1:earlyStopping,1],error.inf=error_list[1:earlyStopping,2],error.sup=error_list[1:earlyStopping,3],error.sd=error_list[1:earlyStopping,4])
+  step.min <- which(df[,"error"] == best.error)
+  sd.best <- df[step.min,"error.sd"]
+  step.sd <- max(which(df[,"error"] > best.error + sd.best & df[,"lambda"] > df[step.min,"lambda"]))
   lambda.sd <- df[step.sd,"lambda"]
   beta.sd <- matrix_beta[step.sd,]
   
@@ -362,7 +394,11 @@ blockwise_coordinate_descent <- function(Z,
     beta.sd = beta.sd,
     data_error = df,
     data_beta = data_beta,
-    earlyStopping = earlyStopping
+    earlyStopping = earlyStopping,
+    mean.Z = mean.Z,
+    sd.Z = sd.Z,
+    mean.y = mean.y,
+    sd.y = sd.y                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
   )
   return(fit)
   }

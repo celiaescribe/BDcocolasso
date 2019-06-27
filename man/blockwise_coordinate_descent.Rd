@@ -73,9 +73,6 @@ as it may introduce bias in the algorithm.
 For computing speed reasons, if model is not converging or running slow, consider changing \code{mu}, decreasing
 \code{etol} or \code{optTol} or decreasing \code{earlyStopping_max}
 }
-\examples{
-
-}
 \seealso{
 \url{https://arxiv.org/pdf/1510.07123.pdf}
 }

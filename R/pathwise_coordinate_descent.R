@@ -14,9 +14,29 @@ rescale_without_NA <- function(j,Z){
   Z[,j] - m
 }
 
+mean_without_NA <- function(j,Z){
+  m <- mean(Z[which(!is.na(Z[,j]), arr.ind = TRUE),j])
+  m
+}
+
+sd_without_NA_block <- function(j,Z){
+  sd <- sd(Z[which(!is.na(Z[,j]), arr.ind = TRUE),j])
+  sd
+}
+
+
 change_NA_value <- function(j,Z){
   Z[which(is.na(Z[,j]), arr.ind = TRUE),j] <- 0
   Z[,j]
+}
+
+scale_manual_with_sd <- function(j,Z,v){
+  sd <- v[j]
+  if (sd != 0){
+    return(Z[,j]/sd)
+  }else{
+    return (Z[,j])
+  }
 }
 
 cross_validation_function <- function(k,
@@ -85,8 +105,6 @@ cross_validation_function <- function(k,
 #' \code{etol} or \code{optTol} or decreasing \code{earlyStopping_max}
 #'   
 #' 
-#' @example 
-#' 
 #' @seealso \url{https://arxiv.org/pdf/1510.07123.pdf}
 #' 
 #' @export
@@ -145,6 +163,9 @@ pathwise_coordinate_descent <- function(Z,
   if(mu>500 || mu<1){
     warning(paste("Mu value (", mu, ") is not in the usual range (10-500)"))
   }
+  if(noise=="missing" && center.Z == FALSE){
+    stop("When noise is equal to missing, it is required to center matrix Z. Use center.Z=TRUE.")
+  }
   
   ratio_matrix = NULL
   if (noise=="missing"){
@@ -160,20 +181,30 @@ pathwise_coordinate_descent <- function(Z,
     ratio_matrix = ratio_matrix/n
   }
   
+  mean.Z = sapply(1:p, function(j)mean_without_NA(j,Z))
+  sd.Z <- sapply(1:p, function(j)sd_without_NA_block(j,Z))
+  
   if (center.Z == TRUE){
     if (scale.Z == TRUE){
       Z = sapply(1:p, function(j)rescale_without_NA(j,Z))
       Z = sapply(1:p, function(j)change_NA_value(j,Z))
-      Z = scale(Z, center = FALSE, scale = TRUE)
+      #Z = scale(Z, center = FALSE, scale = TRUE)
+      Z = sapply(1:p, function(j)scale_manual_with_sd(j,Z,sd.Z))
     }else{
       Z = sapply(1:p, function(j)rescale_without_NA(j,Z))
       Z = sapply(1:p, function(j)change_NA_value(j,Z))
     }
   }else{
     if(scale.Z == TRUE){
-      Z = scale(Z, center = FALSE, scale = TRUE)
+      #Z = scale(Z, center = FALSE, scale = TRUE)
+      Z = sapply(1:p, function(j)scale_manual_with_sd(j,Z,sd.Z))
     }
   }
+  
+  
+  
+  mean.y = mean(y)
+  sd.y = sd(y)
   
   if (center.y == TRUE){
     if (scale.y == TRUE){
@@ -263,10 +294,10 @@ pathwise_coordinate_descent <- function(Z,
       }
     }
   }
-  df <- data.frame(lambda=lambda_list[1:earlyStopping], error=error_list[1:earlyStopping,])
-  step.min <- which(df[,"error.1"] == best.error)
-  sd.best <- df[step.min,"error.4"]
-  step.sd <- max(which(df[,"error.1"] > best.error + sd.best & df[,"lambda"] > df[step.min,"lambda"]))
+  df <- data.frame(lambda=lambda_list[1:earlyStopping], error=error_list[1:earlyStopping,1],error.inf=error_list[1:earlyStopping,2],error.sup=error_list[1:earlyStopping,3],error.sd=error_list[1:earlyStopping,4])
+  step.min <- which(df[,"error"] == best.error)
+  sd.best <- df[step.min,"error.sd"]
+  step.sd <- max(which(df[,"error"] > best.error + sd.best & df[,"lambda"] > df[step.min,"lambda"]))
   lambda.sd <- df[step.sd,"lambda"]
   beta.sd <- matrix_beta[step.sd,]
   
@@ -284,7 +315,11 @@ pathwise_coordinate_descent <- function(Z,
     data_error = df,
     data_beta = data_beta,
     earlyStopping = earlyStopping,
-    vnames = colnames(Z)
+    vnames = colnames(Z),
+    mean.Z = mean.Z,
+    sd.Z = sd.Z,
+    mean.y = mean.y,
+    sd.y = sd.y
   )
   return(fit)
 }

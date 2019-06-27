@@ -20,9 +20,9 @@ coco(Z, y, n, p, p1 = NULL, p2 = NULL, center.Z = TRUE,
 
 \item{p}{Number of features of the matrix}
 
-\item{p1}{Number of uncorrupted predictors}
+\item{p1}{Number of uncorrupted predictors (if dealing with block descent)}
 
-\item{p2}{Number of corrupted predictors}
+\item{p2}{Number of corrupted predictors (if dealing with block descent)}
 
 \item{center.Z}{If TRUE, centers Z matrix without taking into account NAs values, and then change NAs to 0 value (in the
 missing data setting).}
@@ -50,6 +50,8 @@ missing data setting).}
 \item{earlyStopping_max}{Number of iterations allowed when error starts increasing}
 
 \item{noise}{Type of noise (additive or missing)}
+
+\item{block}{If TRUE, implements block descent CoCoLasso. If FALSE, implements simple CoCoLasso.}
 }
 \value{
 list containing \itemize{
@@ -72,9 +74,6 @@ and interpretability reasons. The use of center.Z = TRUE in the additive error s
 as it may introduce bias in the algorithm.
 For computing speed reasons, if model is not converging or running slow, consider changing \code{mu}, decreasing
 \code{etol} or \code{optTol} or decreasing \code{earlyStopping_max}
-}
-\examples{
-
 }
 \seealso{
 \url{https://arxiv.org/pdf/1510.07123.pdf}, \code{\link{blockwise_coordinate_descent}}, \code{\link{pathwise_coordinate_descent}}

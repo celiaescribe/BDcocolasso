@@ -1,13 +1,13 @@
 #' Lasso in covariance form
 #'
-#' Solve the least squares loss with lasso penalty written in a form with the covariance matrix : \eq{\frac{1}{2} \beta^{'} \Sigma \beta - \rho^{'} \beta + \lambda \|\beta\|_1}
+#' Solve the least squares loss with lasso penalty written in a form with the covariance matrix : \eqn{\frac{1}{2} \beta^{'} \Sigma \beta - \rho^{'} \beta + \lambda \|\beta\|_1}
 #'
 #' @param n Number of samples of the design matrix
 #' @param p Number of features of the matrix
 #' @param lambda penalty parameter
 #' @param control Including control parameters : max of iterations, tolerance for the convergence of the error, zero threshold to put to zero small beta coefficients
-#' @param XX Design matrix corresponding to \eq{\frac{1}{n} X'X} or a modified version in the case of CoCoLasso
-#' @param Xy Rho parameter corresponding to \eq{\frac{1}{n} X'y} or a modified version in the case of CoCoLasso
+#' @param XX Design matrix corresponding to \eqn{\frac{1}{n} X'X} or a modified version in the case of CoCoLasso
+#' @param Xy Rho parameter corresponding to \eqn{\frac{1}{n} X'y} or a modified version in the case of CoCoLasso
 #' @param beta.start Initial value of beta
 #' 
 #' @return list containing \itemize{
@@ -15,8 +15,6 @@
 #' \item coef.list : Matrix of coefficients for beta for all iterations
 #' \item num.it Number of iterations 
 #' }
-#' 
-#' @example 
 #' 
 #' @export
 

@@ -16,9 +16,9 @@ lasso_covariance(n, p, lambda, control = list(maxIter = 1000, optTol =
 
 \item{control}{Including control parameters : max of iterations, tolerance for the convergence of the error, zero threshold to put to zero small beta coefficients}
 
-\item{XX}{Design matrix corresponding to \eq{\frac{1}{n} X'X} or a modified version in the case of CoCoLasso}
+\item{XX}{Design matrix corresponding to \eqn{\frac{1}{n} X'X} or a modified version in the case of CoCoLasso}
 
-\item{Xy}{Rho parameter corresponding to \eq{\frac{1}{n} X'y} or a modified version in the case of CoCoLasso}
+\item{Xy}{Rho parameter corresponding to \eqn{\frac{1}{n} X'y} or a modified version in the case of CoCoLasso}
 
 \item{beta.start}{Initial value of beta}
 }
@@ -30,8 +30,5 @@ list containing \itemize{
 }
 }
 \description{
-Solve the least squares loss with lasso penalty written in a form with the covariance matrix : \eq{\frac{1}{2} \beta^{'} \Sigma \beta - \rho^{'} \beta + \lambda \|\beta\|_1}
-}
-\examples{
-
+Solve the least squares loss with lasso penalty written in a form with the covariance matrix : \eqn{\frac{1}{2} \beta^{'} \Sigma \beta - \rho^{'} \beta + \lambda \|\beta\|_1}
 }

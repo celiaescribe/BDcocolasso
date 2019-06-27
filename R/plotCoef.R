@@ -24,7 +24,7 @@ plotCoef <- function(object, linetype="dashed", col="black"){
   beta.sd <- as.matrix(beta.sd)
   
   data_beta.bis <- reshape2::melt(data_beta, id="lambda", value.name="value" ,variable.name="beta")
-  ggplot2::ggplot(data=data_beta.bis) + ggplot2::geom_line(ggplot2::aes(x=log(lambda),y=value,colour=beta)) + ggplot2::geom_vline(xintercept = log(best.lambda), linetype=linetype, colour=col) + ggplot2::geom_vline(xintercept = log(lambda.sd), linetype=linetype, colour=col) + ggplot2::theme(legend.position = "none")+ ggplot2::xlab("Log Lambda") + ggplot2::ylab("Coefficients")
+  ggplot2::ggplot(data=data_beta.bis) + ggplot2::geom_line(data=data_beta.bis,ggplot2::aes(x=log(lambda),y=value,colour=beta)) + ggplot2::geom_vline(xintercept = log(best.lambda), linetype=linetype, colour=col) + ggplot2::geom_vline(xintercept = log(lambda.sd), linetype=linetype, colour=col) + ggplot2::theme(legend.position = "none")+ ggplot2::xlab("Log Lambda") + ggplot2::ylab("Coefficients")
 
 }
 

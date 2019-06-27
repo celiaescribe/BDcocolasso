@@ -22,7 +22,7 @@ lasso_covariance_block(n, p1, p2, X1, Z2, y, sigma1, sigma2, lambda,
 
 \item{y}{Response vector}
 
-\item{sigma1}{Covariance matrix for X1 : \eq{\frac{1}{n} X_1'X_1}. This parameter is automatically furnished in \link{blockwise_coordinate_descent}}
+\item{sigma1}{Covariance matrix for X1 : \eqn{\frac{1}{n} X_1'X_1}. This parameter is automatically furnished in \link{blockwise_coordinate_descent}}
 
 \item{sigma2}{Modified covariance matrix for Z2 through the CoCoLasso algorithm. This parameter is automatically furnished in \link{blockwise_coordinate_descent}}
 
@@ -46,8 +46,5 @@ list containing \itemize{
 }
 }
 \description{
-Solve the least squares loss with lasso penalty written in a form with the covariance matrix : \eq{\frac{1}{2} \beta^{'} \Sigma \beta - \rho^{'} \beta + \lambda \|\beta\|_1}
-}
-\examples{
-
+Solve the least squares loss with lasso penalty written in a form with the covariance matrix : \eqn{\frac{1}{2} \beta^{'} \Sigma \beta - \rho^{'} \beta + \lambda \|\beta\|_1}
 }

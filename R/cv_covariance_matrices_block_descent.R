@@ -23,7 +23,6 @@
 #' \item \code{list_rho_error} list of the modified \code{rho} for the k-fold of \code{mat} 
 #' }
 #' 
-#' @example 
 #' 
 #' @export
 

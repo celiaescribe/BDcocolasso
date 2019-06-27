@@ -25,6 +25,6 @@ plotError <- function(object, linetype="dashed", col="black", colLine="red"){
   beta.sd <- as.matrix(beta.sd)
   
   data_beta.bis <- melt(data_beta, id="lambda", value.name="value" ,variable.name="beta")
-  ggplot2::ggplot(data=data_error) + ggplot2::geom_line(ggplot2::aes(log(lambda),error.1),colour=colLine,size=1) + ggplot2::xlab("Log Lambda") + ggplot2::ylab("Error") + ggplot2::geom_errorbar(ggplot2::aes(x=log(lambda), ymin = error.3, ymax=error.2), colour=col) + ggplot2::geom_vline(xintercept = log(best.lambda), linetype=linetype) + ggplot2::geom_vline(xintercept = log(lambda.sd), linetype=linetype)
+  ggplot2::ggplot(data=data_error) + ggplot2::geom_line(data=data_error,ggplot2::aes(log(lambda),error),colour=colLine,size=1) + ggplot2::xlab("Log Lambda") + ggplot2::ylab("Error") + ggplot2::geom_errorbar(data=data_error,ggplot2::aes(x=log(lambda), ymin = error.inf, ymax=error.sup), colour=col) + ggplot2::geom_vline(xintercept = log(best.lambda), linetype=linetype) + ggplot2::geom_vline(xintercept = log(lambda.sd), linetype=linetype)
   
 }

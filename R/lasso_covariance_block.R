@@ -1,6 +1,6 @@
 #' Lasso in covariance form for the BD-CoCoLasso
 #'
-#' Solve the least squares loss with lasso penalty written in a form with the covariance matrix : \eq{\frac{1}{2} \beta^{'} \Sigma \beta - \rho^{'} \beta + \lambda \|\beta\|_1}
+#' Solve the least squares loss with lasso penalty written in a form with the covariance matrix : \eqn{\frac{1}{2} \beta^{'} \Sigma \beta - \rho^{'} \beta + \lambda \|\beta\|_1}
 #'
 #' @param n Number of samples of the design matrix
 #' @param p1 Number of uncorrupted predictors
@@ -8,7 +8,7 @@
 #' @param X1 first block of the design matrix corresponding to uncorrupted features
 #' @param Z2 second block of the design matrix corresponding to corrupted features
 #' @param y Response vector
-#' @param sigma1 Covariance matrix for X1 : \eq{\frac{1}{n} X_1'X_1}. This parameter is automatically furnished in \link{blockwise_coordinate_descent}
+#' @param sigma1 Covariance matrix for X1 : \eqn{\frac{1}{n} X_1'X_1}. This parameter is automatically furnished in \link{blockwise_coordinate_descent}
 #' @param sigma2 Modified covariance matrix for Z2 through the CoCoLasso algorithm. This parameter is automatically furnished in \link{blockwise_coordinate_descent}
 #' @param lambda Penalty parameter
 #' @param noise Type of noise for Z2 : additive or missing
@@ -23,7 +23,6 @@
 #' \item num.it : Number of iterations of algorithm
 #' }
 #' 
-#' @example 
 #' 
 #' @export
 

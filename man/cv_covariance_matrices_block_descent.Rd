@@ -44,6 +44,3 @@ list containing \itemize{
 \description{
 Creating projected nearest positive semi-definite covariance matrices for the cross validation step of the BD-CoCoLasso algorithm. In that case, the design matrix must be organized as follozs : uncorrupted features must be the first block of the matrix, and corrupted features must be the second block of the matrix.
 }
-\examples{
-
-}
