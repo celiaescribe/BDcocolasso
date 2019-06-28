@@ -20,7 +20,7 @@ mean_without_NA <- function(j,Z){
 }
 
 sd_without_NA_block <- function(j,Z){
-  sd <- sd(Z[which(!is.na(Z[,j]), arr.ind = TRUE),j])
+  sd <- stats::sd(Z[which(!is.na(Z[,j]), arr.ind = TRUE),j])
   sd
 }
 

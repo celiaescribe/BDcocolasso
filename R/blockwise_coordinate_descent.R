@@ -21,7 +21,7 @@ lambda_max.coordinate_descent <- function(Z,
 }
 
 scale_manual <- function(j,Z){
-  sd <- sd(Z[,j])
+  sd <- stats::sd(Z[,j])
   if (sd != 0){
     return(Z[,j]/sd)
   }else{
@@ -41,7 +41,7 @@ mean_without_NA <- function(j,Z){
 }
 
 sd_without_NA_block <- function(j,Z){
-  sd <- sd(Z[which(!is.na(Z[,j]), arr.ind = TRUE),j])
+  sd <- stats::sd(Z[which(!is.na(Z[,j]), arr.ind = TRUE),j])
   sd
 }
 
@@ -264,7 +264,7 @@ blockwise_coordinate_descent <- function(Z,
   }
   
   mean.y = mean(y)
-  sd.y = sd(y)
+  sd.y = stats::sd(y)
   
   if (center.y == TRUE){
     if (scale.y == TRUE){

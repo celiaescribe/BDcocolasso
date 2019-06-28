@@ -39,6 +39,7 @@ print.coco <- function(x, ...) {
 #' at the requested values for \code{s}. Type \code{response} computes the response based 
 #' on the covariates values in \code{newx}, for coefficients corresponding to \code{lambda} value
 #' in \code{lambda.pred}
+#' @param ... currently ignored
 #' 
 #' @return The object returned depends on type.
 #' 

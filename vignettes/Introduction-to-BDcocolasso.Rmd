@@ -60,7 +60,7 @@ coef(fit_missing)
 coef(fit_missing, s=fit_missing$lambda.opt)
 ```
 
-It is also possible to obtain a prediction for new covariates values. Let's simulate values following the same simulation pattern used to obtain Z_missing, and look at the obtained prediction (default configuration is using coefficients for lambda.sd, but it is possible to specify other lambda values):
+It is also possible to obtain a prediction for new covariates values. Let's simulate values following the same simulation pattern used to obtain Z_missing, and look at the obtained prediction. Default configuration is using coefficients for lambda.sd:
 
 ```{r}
 cov = cov_autoregressive(p_missing)
@@ -69,11 +69,15 @@ beta = c(3,2,0,0,1.5,rep(0,p_missing - 5))
 y = X %*% beta + rnorm(1,0,2)
 
 y_predict.sd <- predict(fit_missing, newx = X, type="response")
-y_predict.opt <- predict(fit_missing, newx = X, type="response", lambda.pred = fit_missing$lambda.opt)
 y_predict.sd
-y_predict.opt
+
 ```
 
+But it is also possible to specify the lambda value at which we wish to calculate the prediction:
+```{r}
+y_predict.opt <- predict(fit_missing, newx = X, type="response", lambda.pred = fit_missing$lambda.opt)
+y_predict.opt
+```
 
 It is then possible to visualize the solution path of the coefficients:
 ```{r}
@@ -142,9 +146,9 @@ fit_additive = coco(Z=Z_additive,y=y_additive,n=n_additive,p=p_additive,p1=p1,p2
 ```
 
 Note that the algorithm requires that the first p1 columns of Z be the uncorrupted covariates, and the last p2 columns be the corrupted covariates.
-It it also important to keep in mind that this algorithm has a relatively high computational cost. In the example given above, it is normal that code should run for a dozens seconds before obtaining a result.
+It it also important to keep in mind that this algorithm has a relatively high computational cost. In the example given above, it is normal that code should run for a dozens seconds before obtaining a result. It also requires a big amount of memory when the number of features reaches the thousands.
 
-We can plot the coefficients and the error for the missing data scenario:
+We can plot the coefficients and the error for the missing data scenario. Here we should expect to have 6 non-zero coefficients, with pairs of coefficient having similar values, since data was simulated with beta = c(3,2,0,0,1.5,0,...,0,1.5,0,0,2,3).
 ```{r}
 plotCoef(fit_missing)
 plotError(fit_missing)
