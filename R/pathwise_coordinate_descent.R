@@ -204,7 +204,7 @@ pathwise_coordinate_descent <- function(Z,
   
   
   mean.y = mean(y)
-  sd.y = sd(y)
+  sd.y = stats::sd(y)
   
   if (center.y == TRUE){
     if (scale.y == TRUE){

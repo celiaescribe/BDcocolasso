@@ -16,6 +16,7 @@ Suggests:
     knitr,
     rmarkdown
 RoxygenNote: 6.1.1
+Depends: R (>= 2.10)
 Imports: 
     emdbook,
     matrixcalc,
@@ -24,5 +25,7 @@ Imports:
     stats,
     rlist,
     MASS,
+    qpdf,
+    rlang,
     reshape2
 VignetteBuilder: knitr

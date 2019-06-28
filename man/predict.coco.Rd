@@ -30,6 +30,8 @@ Default is \code{lambda.sd}.}
 at the requested values for \code{s}. Type \code{response} computes the response based 
 on the covariates values in \code{newx}, for coefficients corresponding to \code{lambda} value
 in \code{lambda.pred}}
+
+\item{...}{currently ignored}
 }
 \value{
 The object returned depends on type.
