@@ -95,6 +95,10 @@ cross_validation_function <- function(k,
 #' \item \code{data_beta} Dataframe containing the values of beta for each iteration of the algorithm
 #' \item \code{earlyStopping} Integer containing the value of iteration when early stopping happens
 #' \item \code{vnames} Names of the features
+#' \item \code{mean.Z} Mean of Z matrix without the NAs values
+#' \item \code{sd.Z} Standard deviation of Z matrix without the NAs values
+#' \item \code{mean.y} Mean of y matrix
+#' \item \code{sd.y} Standard deviation of y matrix
 #' }
 #' 
 #' @details It is highly recommended to use center.Z = TRUE for the algorithm to work in the case of missing data. 
@@ -131,7 +135,7 @@ pathwise_coordinate_descent <- function(Z,
   
   nrows = nrow(Z)
   ncols = ncol(Z)
-  
+  vnames = colnames(Z)
   
   if(!(is.matrix(Z))){
     stop("Z has to be a matrix")
@@ -153,6 +157,9 @@ pathwise_coordinate_descent <- function(Z,
   }
   if (!is.numeric(y)) {
     stop("The response y must be numeric. Factors must be converted to numeric")
+  }
+  if (any(is.na(y))){
+    stop("The response contains NA values. Remove NA values before calling the function.")
   }
   if(lambda.factor >= 1){
     stop("lambda factor should be smaller than 1")
@@ -315,7 +322,7 @@ pathwise_coordinate_descent <- function(Z,
     data_error = df,
     data_beta = data_beta,
     earlyStopping = earlyStopping,
-    vnames = colnames(Z),
+    vnames = vnames,
     mean.Z = mean.Z,
     sd.Z = sd.Z,
     mean.y = mean.y,

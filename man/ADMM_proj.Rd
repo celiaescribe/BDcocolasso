@@ -29,3 +29,6 @@ list containing \itemize{
 \description{
 Finds the nearest positive semi-definite matrix with respect to the max norm
 }
+\seealso{
+\url{https://web.stanford.edu/~boyd/papers/pdf/admm_distr_stats.pdf}
+}

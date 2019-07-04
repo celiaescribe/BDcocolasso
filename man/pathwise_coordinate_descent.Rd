@@ -57,6 +57,10 @@ list containing \itemize{
 \item \code{data_beta} Dataframe containing the values of beta for each iteration of the algorithm
 \item \code{earlyStopping} Integer containing the value of iteration when early stopping happens
 \item \code{vnames} Names of the features
+\item \code{mean.Z} Mean of Z matrix without the NAs values
+\item \code{sd.Z} Standard deviation of Z matrix without the NAs values
+\item \code{mean.y} Mean of y matrix
+\item \code{sd.y} Standard deviation of y matrix
 }
 }
 \description{

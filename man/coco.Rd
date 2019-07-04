@@ -43,11 +43,15 @@ missing data setting).}
 
 \item{tau}{Standard deviation for the additive error matrix in the additive error setting (NULL in the missing data setting)}
 
-\item{etol}{Tolerance parameter for the ADMM algorithm}
+\item{etol}{Tolerance parameter for the ADMM algorithm. This parameter has an impact on computing speed, since it controls
+the number of iterations of the ADMM algorithm which can be quite slow when the number of features increases.}
 
-\item{optTol}{Tolerance parameter for the convergence of the error in the pathwise coordinate descent}
+\item{optTol}{Tolerance parameter for the convergence of the error in the pathwise coordinate descent. This parameter
+has an impact on computing speed, since it controls when the algorithm stops after error convergence. It should be adapted
+with regard of the error values. For centered and scaled matrix, a value of \code{optTop} at 1e-5 usually works fine.}
 
-\item{earlyStopping_max}{Number of iterations allowed when error starts increasing}
+\item{earlyStopping_max}{Number of iterations allowed when the cross-validation error starts increasing. This parameter
+has an impact on computing speed, since iterations corresponding to increasing error are usually quite slow.}
 
 \item{noise}{Type of noise (additive or missing)}
 
@@ -62,6 +66,11 @@ list containing \itemize{
 \item \code{data_error} Dataframe containing errors and their standard deviation for each iteration of the algorithm
 \item \code{data_beta} Dataframe containing the values of beta for each iteration of the algorithm
 \item \code{earlyStopping} Integer containing the value of iteration when early stopping happens
+\item \code{vnames} Names of the features
+\item \code{mean.Z} Mean of Z matrix without the NAs values
+\item \code{sd.Z} Standard deviation of Z matrix without the NAs values
+\item \code{mean.y} Mean of y matrix
+\item \code{sd.y} Standard deviation of y matrix
 }
 }
 \description{

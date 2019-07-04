@@ -53,14 +53,16 @@ predict.coco <- function(object, newx, s=NULL, lambda.pred=NULL, type=c("respons
       stop("newx is missing. Please supply the vector of covariates for which response is required.")
     }
   }
+  browser()
   lambda.seq = object$data_beta[,"lambda"]
   nbeta = object$data_beta
   if(!is.null(object$vnames)){
-    colnames(nbeta) <- rbind("lambda", object$vnames)
+
+    colnames(nbeta) <- c("lambda", object$vnames)
   }
   if (!is.null(s)){
     index <- match(s,lambda.seq)
-    nbeta <- object$data_beta[index,]
+    nbeta <- nbeta[index,]
   }
   if(type == "coefficients"){
     return(nbeta)
