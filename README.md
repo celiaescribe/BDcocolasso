@@ -9,25 +9,28 @@
 status](https://travis-ci.org/celiaescribe/BDcocolasso.svg?branch=master)](https://travis-ci.org/celiaescribe/BDcocolasso)
 <!-- badges: end -->
 
-R software package to implement sparse regression in high-dimensional
-setting, with a small portion of covariates corrupted (that is to say
-with additive error measure, or with missing data). This package
-implements simple CoCoLasso algorithm, and a variation called
-Block-Descent CoCoLasso, or BDCoCoLasso, for settings where only a small
-percentage of the features are corrupted.
+R software package to implement high-dimensional error-in-variables
+regression. This package implements CoCoLasso algorithm in settings with
+additive error or missing data in the covariates. This package also
+implements a variation of the CoCoLasso algorithm called Block-Descent
+CoCoLasso (or BD-CoCoLasso), which focuses on a setting where only a
+small percentage of the features are corrupted (with additive error or
+missing data)
 
 This package is based on the [CoCoLasso
 algorithm](https://arxiv.org/pdf/1510.07123.pdf). CoCoLASSO requires a
 computationally demanding positive semi-definite projection of the
-covariance matrix for a high dimensional feature set. In our context
-when there are corrupted and uncorrupted covariates, we take advantage
-of the block descent minimization trick to develop a more efficient
-algorithm. In an alternating block minimization algorithm, the CoCoLasso
-corrections are used when updating corrupted coefficient vectors, and a
-simple LASSO is used for the uncorrupted coefficient vectors. Both
-subproblems are convex and hence a global solution can be obtained, even
-though adaption of the cross-validation step requires care in this
-setting where there are products of corrupted and uncorrupted matrices.
+covariance matrix for a high dimensional feature set. In a very
+high-dimensional context where there are both corrupted and uncorrupted
+covariates and where the portion of corrupted features is small enough,
+we take advantage of the block descent minimization trick to develop a
+more efficient algorithm called BDCoCoLasso. In an alternating block
+minimization algorithm, the CoCoLasso corrections are used when updating
+corrupted coefficient vectors, and a simple LASSO is used for the
+uncorrupted coefficient vectors. Both subproblems are convex and hence a
+global solution can be obtained, even though adaption of the
+cross-validation step requires care in this setting where there are
+products of corrupted and uncorrupted matrices.
 
 ## Installation
 
@@ -51,8 +54,8 @@ usage of the functions.
 
 There exist two settings in which the BD-CoCoLasso can be used : in the
 simple CoCoLasso version, and in the Block-Descent-CoCoLasso version.
-The inputs vary according to the chosen setting, and according to the
-chosen noise setting.
+The inputs vary according to the chosen algorithm setting, and according
+to the chosen noise setting.
 
   - **CoCoLasso setting**: This method requires six inputs (let n be the
     number of observations and p the number of X variables):
