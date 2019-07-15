@@ -150,7 +150,7 @@ n_missing <- dim(Z_missing)[1]
 p_missing <- dim(Z_missing)[2]
 y_missing = as.matrix(y_missing)
 
-fit_missing = coco(Z=Z_missing,y=y_missing,n=n_missing,p=p_missing,p1=p1,p2=p2,step=100,K=4,mu=10,tau=NULL,noise="missing",block=TRUE)
+fit_missing = coco(Z=Z_missing,y=y_missing,n=n_missing,p=p_missing,p1=p1,p2=p2,step=100,K=4,mu=10,tau=NULL,noise="missing",block=TRUE, penalty="lasso")
 
 y_additive <- simulated_data_additive_block[,1]
 Z_additive = simulated_data_additive_block[,2:dim(simulated_data_additive_block)[2]]
@@ -159,7 +159,7 @@ n_additive <- dim(Z_additive)[1]
 p_additive <- dim(Z_additive)[2]
 y_additive = as.matrix(y_additive)
 
-fit_additive = coco(Z=Z_additive,y=y_additive,n=n_additive,p=p_additive,p1=p1,p2=p2,center.Z = FALSE, step=100,K=4,mu=10,tau=0.3,noise="additive",block=TRUE)
+fit_additive = coco(Z=Z_additive,y=y_additive,n=n_additive,p=p_additive,p1=p1,p2=p2,center.Z = FALSE, step=100,K=4,mu=10,tau=0.3,noise="additive",block=TRUE, penalty="lasso")
 
 
 ```

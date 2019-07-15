@@ -27,6 +27,7 @@
 #' has an impact on computing speed, since iterations corresponding to increasing error are usually quite slow.
 #' @param noise Type of noise (additive or missing)
 #' @param block If TRUE, implements block descent CoCoLasso. If FALSE, implements simple CoCoLasso.
+#' @param penalty Type of penalty used : can be lasso penalty or SCAD penalty
 #' 
 #' @return list containing \itemize{
 #' \item \code{lambda.opt} optimal value of lambda corresponding to minimum error

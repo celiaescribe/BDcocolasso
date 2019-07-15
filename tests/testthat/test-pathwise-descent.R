@@ -11,7 +11,7 @@ n_missing <- dim(Z_missing)[1]
 p_missing <- dim(Z_missing)[2]
 y_missing = as.matrix(y_missing)
 
-fit_missing = BDcocolasso::coco(Z=Z_missing,y=y_missing,n=n_missing,p=p_missing,step=100,K=4,mu=10,tau=NULL, etol = 1e-4,noise = "missing", block=FALSE)
+fit_missing = BDcocolasso::coco(Z=Z_missing,y=y_missing,n=n_missing,p=p_missing,step=100,K=4,mu=10,tau=NULL, etol = 1e-4,noise = "missing", block=FALSE, penalty="lasso")
 beta_missing <- fit_missing$beta.opt
 beta_missing <- as.matrix(beta_missing)
 beta.sd_missing <- fit_missing$beta.sd
@@ -26,7 +26,7 @@ n_additive <- dim(Z_additive)[1]
 p_additive <- dim(Z_additive)[2]
 y_additive = as.matrix(y_additive)
 
-fit_additive = BDcocolasso::coco(Z=Z_additive,y=y_additive,n=n_additive,p=p_additive,center.Z = FALSE, step=100,K=4,mu=10,tau=0.3,etol = 1e-4,noise = "additive",block=FALSE)
+fit_additive = BDcocolasso::coco(Z=Z_additive,y=y_additive,n=n_additive,p=p_additive,center.Z = FALSE, step=100,K=4,mu=10,tau=0.3,etol = 1e-4,noise = "additive",block=FALSE, penalty="lasso")
 beta_additive <- fit_additive$beta.opt
 beta_additive <- as.matrix(beta_additive)
 beta.sd_additive <- fit_additive$beta.sd

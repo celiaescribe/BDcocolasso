@@ -56,6 +56,8 @@ has an impact on computing speed, since iterations corresponding to increasing e
 \item{noise}{Type of noise (additive or missing)}
 
 \item{block}{If TRUE, implements block descent CoCoLasso. If FALSE, implements simple CoCoLasso.}
+
+\item{penalty}{Type of penalty used : can be lasso penalty or SCAD penalty}
 }
 \value{
 list containing \itemize{

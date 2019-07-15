@@ -256,7 +256,6 @@ blockwise_coordinate_descent <- function(Z,
       Z[,start:p] = sapply(1:p2, function(j)rescale_without_NA_block(j,Z,p1))
       Z[,start:p] = sapply(1:p2, function(j)change_NA_value_block(j,Z,p1))
       Z[,1:p1] = scale(Z[,1:p1], center = TRUE, scale = FALSE)
-      #Z <- sapply(1:p, function(j)scale_manual(j,Z))
       Z = sapply(1:p, function(j)scale_manual_with_sd(j,Z,sd.Z))
     }else{
       Z_[,start:p] = sapply(1:p2, function(j)rescale_without_NA_block(j,Z,p1))
@@ -265,7 +264,6 @@ blockwise_coordinate_descent <- function(Z,
     }
   }else{
     if (scale.Z == TRUE){
-      #Z <- sapply(1:p, function(j)scale_manual(j,Z))
       Z = sapply(1:p, function(j)scale_manual_with_sd(j,Z,sd.Z))
     }
   }
