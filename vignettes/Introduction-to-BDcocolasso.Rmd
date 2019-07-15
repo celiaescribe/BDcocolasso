@@ -56,7 +56,6 @@ print(fit_missing)
 
 It is also possible to display the coefficients obtained for all values of lambda, or for specific values of lambda.
 ```{r}
-coef(fit_missing)
 coef(fit_missing, s=fit_missing$lambda.opt)
 ```
 
@@ -118,6 +117,8 @@ plotCoef(fit_additive)
 plotError(fit_additive)
 ```
 
+
+
 ## Block-Descent CoCoLasso algorithm
 
 The BDCoCoLasso algorithms functions the same way. We can fit the model for both datasets. We have to be careful to use \code{block=TRUE}:
@@ -156,3 +157,4 @@ plotCoef(fit_additive)
 plotError(fit_additive)
 ```
 
+One important remark : using too important missing rate may lead to a disfunctionement of the algorithms. If the error "eigen(W, symmetric=TRUE) : infinite or NaN values" appears, this may indicate that you used a matrix with too important missing rates. A good threshold for missing values is 0.5.

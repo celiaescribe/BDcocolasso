@@ -65,7 +65,10 @@ predict.coco <- function(object, newx, s=NULL, lambda.pred=NULL, type=c("respons
   }
   if(type == "coefficients"){
     coef = t(nbeta[,-1])
-    colnames(coef) <- c("Coefficient")
+    if (!is.null(s)){
+      colnames(coef) <- c("Coefficient")
+    }
+    
     return(coef)
   }else{
     #browser()
@@ -84,9 +87,14 @@ predict.coco <- function(object, newx, s=NULL, lambda.pred=NULL, type=c("respons
   }
 }
 
+#' @title Coef Method for \code{coco} object
+#' @description Similar to other coef functions, this function returns the coefficient values 
+#' for different possible lambda values
 #' @inheritParams predict.coco
-#' @rdname predict.coco
+#' @return Coefficient value
+#' @rdname coef.coco
 #' @export
+
 coef.coco <- function(object, s = NULL, ...) {
   stats::predict(object, s = s, type = "coefficients", ...)
 }

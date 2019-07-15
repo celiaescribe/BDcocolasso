@@ -2,13 +2,10 @@
 % Please edit documentation in R/methods.R
 \name{predict.coco}
 \alias{predict.coco}
-\alias{coef.coco}
 \title{Make predictions from a coco object}
 \usage{
 \method{predict}{coco}(object, newx, s = NULL, lambda.pred = NULL,
   type = c("response", "coefficients"), ...)
-
-\method{coef}{coco}(object, s = NULL, ...)
 }
 \arguments{
 \item{object}{Fitted \code{coco} model object}

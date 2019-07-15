@@ -26,7 +26,8 @@ lasso_covariance <- function(n,
                                             zeroThreshold = 10^(-6)), 
                              XX, 
                              Xy, 
-                             beta.start) {
+                             beta.start,
+                             penalty=c("lasso", "SCAD")) {
   
   beta <- beta.start
   wp <- beta
