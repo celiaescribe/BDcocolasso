@@ -42,21 +42,25 @@ p_missing <- dim(Z_missing)[2]
 y_missing = as.matrix(y_missing)
 ```
 
-We can then fit the CoCoLasso model to our data. It is important to specify the type of noise (additive or missing) and the use of CoCoLasso (block=FALSE) or BD-CoCoLasso (block=TRUE). Here, `noise` is equal to `missing` because we have NAs values in the dataset :
+We can then fit the CoCoLasso model to our data. It is important to specify the type of noise (additive or missing) and the use of CoCoLasso (block=FALSE) or BD-CoCoLasso (block=TRUE). Here, `noise` is equal to `missing` because we have NAs values in the dataset. 
+We can use two kinds of penalties : the classic lasso penalty (penalty="lasso") or the SCAD penalty (penalty="SCAD"). The latter should lead to less bias in the solution.
 ```{r}
-
-fit_missing = coco(Z=Z_missing,y=y_missing,n=n_missing,p=p_missing,step=100,K=4,mu=10,tau=NULL, etol = 1e-4,noise = "missing",block=FALSE)
+set.seed(1234567)
+fit_missing.lasso = coco(Z=Z_missing,y=y_missing,n=n_missing,p=p_missing,step=100,K=4,mu=10,tau=NULL, etol = 1e-4,noise = "missing",block=FALSE, penalty="lasso")
+set.seed(1234567)
+fit_missing.SCAD = coco(Z=Z_missing,y=y_missing,n=n_missing,p=p_missing,step=100,K=4,mu=10,tau=NULL, etol = 1e-4,noise = "missing",block=FALSE, penalty="SCAD")
 ```
 
 It is possible to print the fitted object, so as to display the evolution of mean-squared error in function of lambda values:
 ```{r}
-print(fit_missing)
+print(fit_missing.lasso)
 
 ```
 
 It is also possible to display the coefficients obtained for all values of lambda, or for specific values of lambda.
 ```{r}
-coef(fit_missing, s=fit_missing$lambda.opt)
+coef(fit_missing.lasso, s=fit_missing.lasso$lambda.opt)
+coef(fit_missing.SCAD, s=fit_missing.SCAD$lambda.opt)
 ```
 
 It is also possible to obtain a prediction for new covariates values. Let's simulate values following the same simulation pattern used to obtain Z_missing, and look at the obtained prediction. Default configuration is using coefficients for lambda.sd:
@@ -67,30 +71,44 @@ X = MASS::mvrnorm(1,mu=rep(0,p_missing),Sigma=cov)
 beta = c(3,2,0,0,1.5,rep(0,p_missing - 5))
 y = X %*% beta + rnorm(1,0,2)
 
-y_predict.sd <- predict(fit_missing, newx = X, type="response")
-y_predict.sd
+y
 
 ```
 
-But it is also possible to specify the lambda value at which we wish to calculate the prediction:
+Let's compare the prediction obtained with the lasso penalty and with the SCAD penalty :
 ```{r}
-y_predict.opt <- predict(fit_missing, newx = X, type="response", lambda.pred = fit_missing$lambda.opt)
+y_predict.sd.lasso <- predict(fit_missing.lasso, newx = X, type="response")
+y_predict.sd.lasso
+```
+
+```{r}
+y_predict.sd.SCAD <- predict(fit_missing.SCAD, newx = X, type="response")
+y_predict.sd.SCAD
+```
+
+We can see that using the SCAD penalty leads to less bias.
+
+It is also possible to specify the lambda value at which we wish to calculate the prediction:
+```{r}
+y_predict.opt <- predict(fit_missing.lasso, newx = X, type="response", lambda.pred = fit_missing.lasso$lambda.opt)
 y_predict.opt
 ```
 
 It is then possible to visualize the solution path of the coefficients:
 ```{r}
-plotCoef(fit_missing)
+plotCoef(fit_missing.lasso)
+plotCoef(fit_missing.SCAD)
 ```
 
 It is also possible to visualize the mean-squared error for all values of lambda:
 ```{r}
-plotError(fit_missing)
+plotError(fit_missing.lasso)
+plotError(fit_missing.SCAD)
 ```
 In red is the mean squared error (without the constant term, which is why we obtain negative values), and in black are the standard deviations for each error value.
 On each of the plots, the left dashed line represent the optimum lambda, while the right dashed line represent the lambda corresponding to the one-standard-error rule.
 
-We can do the same with additive error setting :
+We can do the same with additive error setting (in the following we will show the use of the lasso penalty, although the SCAD penalty can also be used without any problem)
 ```{r}
 y_additive <- simulated_data_additive[,1]
 Z_additive = simulated_data_additive[,2:dim(simulated_data_additive)[2]]
@@ -105,7 +123,7 @@ Let's fit CoCoLasso:
 ```{r}
 
 
-fit_additive = coco(Z=Z_additive,y=y_additive,n=n_additive,p=p_additive,center.Z = FALSE, step=100,K=4,mu=10,tau=0.3,etol = 1e-4,noise = "additive", block=FALSE)
+fit_additive = coco(Z=Z_additive,y=y_additive,n=n_additive,p=p_additive,center.Z = FALSE, step=100,K=4,mu=10,tau=0.3,etol = 1e-4,noise = "additive", block=FALSE, penalty="lasso")
 
 ```
 

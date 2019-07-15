@@ -4,7 +4,7 @@
 \alias{coef.coco}
 \title{Coef Method for \code{coco} object}
 \usage{
-coef.coco(object, s = NULL, ...)
+\method{coef}{coco}(object, s = NULL, ...)
 }
 \arguments{
 \item{object}{Fitted \code{coco} model object}

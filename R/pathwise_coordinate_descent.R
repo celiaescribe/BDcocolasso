@@ -47,12 +47,13 @@ cross_validation_function <- function(k,
                                       list_rho_lasso,
                                       list_matrices_error,
                                       list_rho_error,
-                                      beta_start){
+                                      beta_start,
+                                      penalty=c("lasso","SCAD")){
   
   #Solving the lasso problem without the kth fold
   sigma_train <- list_matrices_lasso[[k]]
   rho_train <- list_rho_lasso[[k]] 
-  coef_lambda = lasso_covariance(n=n, p=p,lambda=lambda_step, XX=sigma_train, Xy=rho_train, beta.start=beta_start)$coefficients
+  coef_lambda = lasso_covariance(n=n, p=p,lambda=lambda_step, XX=sigma_train, Xy=rho_train, beta.start=beta_start, penalty=penalty)$coefficients
   
   #Calculating the error on the remaining fold
   sigma_test <- list_matrices_error[[k]]
@@ -85,6 +86,7 @@ cross_validation_function <- function(k,
 #' @param optTol Tolerance parameter for the convergence of the error in the pathwise coordinate descent
 #' @param earlyStopping_max Number of iterations allowed when error starts increasing
 #' @param noise Type of noise (additive or missing)
+#' @param penalty Type of penalty used : can be lasso penalty or SCAD penalty
 #' 
 #' @return list containing \itemize{
 #' \item \code{lambda.opt} optimal value of lambda corresponding to minimum error
@@ -130,7 +132,8 @@ pathwise_coordinate_descent <- function(Z,
                                         etol= 1e-4,
                                         optTol = 1e-10,
                                         earlyStopping_max = 10,
-                                        noise=c("additive","missing")){
+                                        noise=c("additive","missing"),
+                                        penalty=c("lasso","SCAD")){
   
   
   nrows = nrow(Z)
@@ -195,7 +198,6 @@ pathwise_coordinate_descent <- function(Z,
     if (scale.Z == TRUE){
       Z = sapply(1:p, function(j)rescale_without_NA(j,Z))
       Z = sapply(1:p, function(j)change_NA_value(j,Z))
-      #Z = scale(Z, center = FALSE, scale = TRUE)
       Z = sapply(1:p, function(j)scale_manual_with_sd(j,Z,sd.Z))
     }else{
       Z = sapply(1:p, function(j)rescale_without_NA(j,Z))
@@ -203,7 +205,6 @@ pathwise_coordinate_descent <- function(Z,
     }
   }else{
     if(scale.Z == TRUE){
-      #Z = scale(Z, center = FALSE, scale = TRUE)
       Z = sapply(1:p, function(j)scale_manual_with_sd(j,Z,sd.Z))
     }
   }
@@ -266,7 +267,8 @@ pathwise_coordinate_descent <- function(Z,
                                                            list_rho_lasso,
                                                            list_matrices_error,
                                                            list_rho_error,
-                                                           beta_start))
+                                                           beta_start,
+                                                           penalty=penalty))
     error = mean(out)
     sd_low = stats::quantile(out, probs = c(0.1))
     sd_high = stats::quantile(out, probs = c(0.9))
@@ -274,7 +276,7 @@ pathwise_coordinate_descent <- function(Z,
     error_list[i,2] <- sd_low
     error_list[i,3] <- sd_high
     error_list[i,4] <- stats::sd(out)
-    coef_tot = lasso_covariance(n=n, p=p, lambda=lambda_step, XX=ZZ, Xy=Zy, beta.start = beta_start)$coefficients
+    coef_tot = lasso_covariance(n=n, p=p, lambda=lambda_step, XX=ZZ, Xy=Zy, beta.start = beta_start, penalty=penalty)$coefficients
     beta_start <- coef_tot
     matrix_beta[i,] <- beta_start
     

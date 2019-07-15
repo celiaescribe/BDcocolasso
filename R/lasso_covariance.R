@@ -9,6 +9,7 @@
 #' @param XX Design matrix corresponding to \eqn{\frac{1}{n} X'X} or a modified version in the case of CoCoLasso
 #' @param Xy Rho parameter corresponding to \eqn{\frac{1}{n} X'y} or a modified version in the case of CoCoLasso
 #' @param beta.start Initial value of beta
+#' @param penalty Type of penalty used : can be lasso penalty or SCAD penalty
 #' 
 #' @return list containing \itemize{
 #' \item coefficients : Coefficients corresponding to final beta after convergence of the algoritm
@@ -35,7 +36,7 @@ lasso_covariance <- function(n,
   
   ## compute the product of XX with beta
   s <- XX %*% beta
-  
+  lambda0 <- lambda
   while (m < control$maxIter) {
     beta_old <- beta
     for (j in 1:p) {
@@ -46,6 +47,19 @@ lasso_covariance <- function(n,
         next
       }
       
+      w_j <- 1
+      if(penalty == "SCAD"){
+        a <- 3.7
+        if(abs(beta[j]) <= lambda){
+          w_j <- 1
+        }else if(abs(beta[j]) <= a*lambda){
+          w_j <- (a*lambda - abs(beta[j]))/(lambda*(a-1))
+        }else{
+          w_j <- 0
+        }
+      }
+      
+      lambda <- w_j * lambda0
       if (S0 > lambda){
         beta[j] <- (lambda - S0)/XX[j, j]
         s <- s + XX[,j]*( beta[j] - beta_old[j])

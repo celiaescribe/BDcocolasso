@@ -74,7 +74,8 @@ coco <- function(Z,
                  optTol = 1e-5,
                  earlyStopping_max = 10,
                  noise=c("additive","missing"),
-                 block = TRUE){
+                 block = TRUE,
+                 penalty=c("lasso","SCAD")){
 
   this.call <- match.call()
   if(block){
@@ -114,7 +115,8 @@ coco <- function(Z,
                                                      etol = etol,
                                                      optTol = optTol,
                                                      earlyStopping_max = earlyStopping_max,
-                                                     noise = noise)
+                                                     noise = noise,
+                                                     penalty=penalty)
   }
   fit$call <- this.call
   class(fit) <- "coco"

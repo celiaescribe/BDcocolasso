@@ -5,7 +5,8 @@
 \title{Lasso in covariance form}
 \usage{
 lasso_covariance(n, p, lambda, control = list(maxIter = 1000, optTol =
-  10^(-5), zeroThreshold = 10^(-6)), XX, Xy, beta.start)
+  10^(-5), zeroThreshold = 10^(-6)), XX, Xy, beta.start,
+  penalty = c("lasso", "SCAD"))
 }
 \arguments{
 \item{n}{Number of samples of the design matrix}
@@ -21,6 +22,8 @@ lasso_covariance(n, p, lambda, control = list(maxIter = 1000, optTol =
 \item{Xy}{Rho parameter corresponding to \eqn{\frac{1}{n} X'y} or a modified version in the case of CoCoLasso}
 
 \item{beta.start}{Initial value of beta}
+
+\item{penalty}{Type of penalty used : can be lasso penalty or SCAD penalty}
 }
 \value{
 list containing \itemize{

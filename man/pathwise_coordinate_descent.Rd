@@ -9,7 +9,7 @@ pathwise_coordinate_descent(Z, y, n, p, center.Z = TRUE,
   lambda.factor = ifelse(dim(Z)[1] < dim(Z)[2], 0.01, 0.001),
   step = 100, K = 4, mu = 10, tau = NULL, etol = 1e-04,
   optTol = 1e-10, earlyStopping_max = 10, noise = c("additive",
-  "missing"))
+  "missing"), penalty = c("lasso", "SCAD"))
 }
 \arguments{
 \item{Z}{Corrupted design matrix (with additive error or missing data)}
@@ -46,6 +46,8 @@ missing data setting).}
 \item{earlyStopping_max}{Number of iterations allowed when error starts increasing}
 
 \item{noise}{Type of noise (additive or missing)}
+
+\item{penalty}{Type of penalty used : can be lasso penalty or SCAD penalty}
 }
 \value{
 list containing \itemize{

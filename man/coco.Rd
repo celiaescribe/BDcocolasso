@@ -9,7 +9,7 @@ coco(Z, y, n, p, p1 = NULL, p2 = NULL, center.Z = TRUE,
   lambda.factor = ifelse(dim(Z)[1] < dim(Z)[2], 0.01, 0.001),
   step = 100, K = 4, mu = 10, tau = NULL, etol = 1e-04,
   optTol = 1e-05, earlyStopping_max = 10, noise = c("additive",
-  "missing"), block = TRUE)
+  "missing"), block = TRUE, penalty = c("lasso", "SCAD"))
 }
 \arguments{
 \item{Z}{Corrupted design matrix (with additive error or missing data)}
