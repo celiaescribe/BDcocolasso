@@ -175,4 +175,18 @@ plotCoef(fit_additive)
 plotError(fit_additive)
 ```
 
-One important remark : using too important missing rate may lead to a disfunctionement of the algorithms. If the error "eigen(W, symmetric=TRUE) : infinite or NaN values" appears, this may indicate that you used a matrix with too important missing rates. A good threshold for missing values is 0.5.
+We can also use SCAD penalty for the Block-Descent-CoCoLasso :
+```{r}
+fit_missing.SCAD = coco(Z=Z_missing,y=y_missing,n=n_missing,p=p_missing,p1=p1,p2=p2,step=100,K=4,mu=10,tau=NULL,noise="missing",block=TRUE, penalty="SCAD")
+```
+
+Once again, we get more erratic solution paths with slightly bigger coefficients.
+
+```{r}
+plotCoef(fit_missing.SCAD)
+plotError(fit_missing.SCAD)
+```
+
+We will note that here, due to the fact that there are only 3 coefficients that get activated, convergence is very quick to be reached, and we should select `lambda.opt` and not `lambda.sd` as a good estimate for the coefficient values. This would not be the case in a model where there are more activated coefficients with varying amplitude.
+
+One important remark : using too important missing rate may lead to a disfunctionement of the algorithms. If the error "eigen(W, symmetric=TRUE) : infinite or NaN values" appears, this may indicate that you used a matrix with too important missing rates. A good empirical threshold for missing values is 0.5.

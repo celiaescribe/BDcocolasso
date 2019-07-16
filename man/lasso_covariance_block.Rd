@@ -7,7 +7,7 @@
 lasso_covariance_block(n, p1, p2, X1, Z2, y, sigma1, sigma2, lambda,
   noise = c("additive", "missing", "HM"), ratio_matrix = NULL,
   control = list(maxIter = 1000, optTol = 10^(-5), zeroThreshold =
-  10^(-6)), beta1.start, beta2.start)
+  10^(-6)), beta1.start, beta2.start, penalty = c("lasso", "SCAD"))
 }
 \arguments{
 \item{n}{Number of samples of the design matrix}
@@ -37,6 +37,8 @@ lasso_covariance_block(n, p1, p2, X1, Z2, y, sigma1, sigma2, lambda,
 \item{beta1.start}{Initial value for the coefficients of uncorrupted features}
 
 \item{beta2.start}{Initial value for the coefficients of corrupted features}
+
+\item{penalty}{Type of penalty used : can be lasso penalty or SCAD penalty}
 }
 \value{
 list containing \itemize{

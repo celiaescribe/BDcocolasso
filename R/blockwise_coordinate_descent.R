@@ -77,7 +77,8 @@ cross_validation_function.block_descent <- function(k,
                                                     ratio_matrix=NULL,
                                                     beta1.start,
                                                     beta2.start,
-                                                    noise){
+                                                    noise,
+                                                    penalty=penalty){
   
   ### Calculating the error for the design matrix without the kth fold
   start = p1 + 1
@@ -90,7 +91,8 @@ cross_validation_function.block_descent <- function(k,
   y_cv_train <- y[-index]
   out = lasso_covariance_block(n=n_without_fold,p1=p1,p2=p2,X1=X1_cv_train,Z2=Z2_cv_train,y=y_cv_train,
                                sigma1=sigma_uncorrupted_train,sigma2=sigma_corrupted_train,lambda=lambda,
-                               noise=noise,ratio_matrix = ratio_matrix,beta1.start = beta1.start, beta2.start = beta2.start)
+                               noise=noise,ratio_matrix = ratio_matrix,beta1.start = beta1.start, beta2.start = beta2.start,
+                               penalty=penalty)
   beta1.lambda <- out$coefficients.beta1
   beta2.lambda <- out$coefficients.beta2
   
@@ -139,6 +141,7 @@ cross_validation_function.block_descent <- function(k,
 #' @param optTol Tolerance parameter for the convergence of the error in the pathwise coordinate descent
 #' @param earlyStopping_max Number of iterations allowed when error starts increasing
 #' @param noise Type of noise (additive or missing)
+#' @param penalty Type of penalty used : can be lasso penalty or SCAD penalty
 #' 
 #' @return list containing \itemize{
 #' \item \code{lambda.opt} optimal value of lambda corresponding to minimum error
@@ -185,7 +188,8 @@ blockwise_coordinate_descent <- function(Z,
                                          etol= 1e-4,
                                          optTol = 1e-5,
                                          earlyStopping_max = 10,
-                                         noise=c("additive","missing")){
+                                         noise=c("additive","missing"),
+                                         penalty=c("lasso","SCAD")){
   
   nrows = nrow(Z)
   ncols = ncol(Z)
@@ -330,7 +334,8 @@ blockwise_coordinate_descent <- function(Z,
                                                                          ratio_matrix = ratio_matrix,
                                                                          beta1.start,
                                                                          beta2.start,
-                                                                         noise=noise))
+                                                                         noise=noise,
+                                                                         penalty=penalty))
     error = mean(out)
     sd_low = stats::quantile(out, probs = c(0.1))
     sd_high = stats::quantile(out, probs = c(0.9))
@@ -339,7 +344,8 @@ blockwise_coordinate_descent <- function(Z,
     error_list[i,3] <- sd_high
     error_list[i,4] <- stats::sd(out)
     out = lasso_covariance_block(n=n, p1=p1, p2=p2, X1=X1, Z2=Z2, y=y, sigma1=sigma1, sigma2=sigma2, lambda=lambda_step, 
-                                 noise=noise, ratio_matrix = ratio_matrix, beta1.start = beta1.start, beta2.start = beta2.start)
+                                 noise=noise, ratio_matrix = ratio_matrix, beta1.start = beta1.start, beta2.start = beta2.start,
+                                 penalty=penalty)
     beta1 <- out$coefficients.beta1
     beta2 <- out$coefficients.beta2
     beta <- c(beta1,beta2)

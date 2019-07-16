@@ -16,6 +16,7 @@
 #' @param control Including control parameters : max of iterations, tolerance for the convergence of the error, zero threshold to put to zero small beta coefficients
 #' @param beta1.start Initial value for the coefficients of uncorrupted features
 #' @param beta2.start Initial value for the coefficients of corrupted features
+#' @param penalty Type of penalty used : can be lasso penalty or SCAD penalty
 #' 
 #' @return list containing \itemize{
 #' \item coefficients.beta1 : Coefficients corresponding to final beta1 after convergence of the algoritm
@@ -41,7 +42,8 @@ lasso_covariance_block <- function(n,
                                                   optTol = 10^(-5), 
                                                   zeroThreshold = 10^(-6)),
                                    beta1.start,
-                                   beta2.start){
+                                   beta2.start,
+                                   penalty=c("lasso","SCAD")){
 
   
   beta1 <- beta1.start
@@ -71,12 +73,10 @@ lasso_covariance_block <- function(n,
     if (noise == "additive"){
       Xy1 <- 1/n * t(X1) %*% (y - Z2 %*% beta2)
     } else if ((noise == "missing") || (noise == "HM")){
-      # Xy1 <- 1/n * t(X1) %*% (y - Z2 %*% beta2)
       Z2_tilde <- sapply(1:p2,function(j)Z2[,j] / diag(ratio_matrix)[j])
       Xy1 <- 1/n * t(X1) %*% (y - Z2_tilde %*% beta2 )
     }
-    # Xy1 <- 1/n * t(X1) %*% (y - Z2 %*% beta2)
-    beta1 <- lasso_covariance(n=n, p=p1, lambda=lambda, XX=sigma1, Xy = Xy1, beta.start = beta1.old, penalty="lasso")$coefficients
+    beta1 <- lasso_covariance(n=n, p=p1, lambda=lambda, XX=sigma1, Xy = Xy1, beta.start = beta1.old, penalty=penalty)$coefficients
     
     
     # Second step of the block descent : dealing with corrupted predictors
@@ -85,7 +85,7 @@ lasso_covariance_block <- function(n,
     } else if ((noise == "missing") || (noise == "HM")){
       Xy2 <- 1/n * (t(Z2) %*% (y - X1 %*% beta1)) / diag(ratio_matrix)
     }
-    beta2 <- lasso_covariance(n=n, p=p2, lambda=lambda, XX=sigma2, Xy = Xy2, beta.start = beta2.old, penalty="lasso")$coefficients
+    beta2 <- lasso_covariance(n=n, p=p2, lambda=lambda, XX=sigma2, Xy = Xy2, beta.start = beta2.old, penalty=penalty)$coefficients
     
     error_beta1[m,1] = sum(abs(beta1 - beta1.old))
     error_beta2[m,1] = sum(abs(beta2 - beta2.old))

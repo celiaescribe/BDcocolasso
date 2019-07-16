@@ -98,7 +98,8 @@ coco <- function(Z,
                                                      etol = etol,
                                                      optTol = optTol,
                                                      earlyStopping_max = earlyStopping_max,
-                                                     noise = noise)
+                                                     noise = noise,
+                                                     penalty=penalty)
   }else{
     fit <- BDcocolasso::pathwise_coordinate_descent(Z=Z,
                                                      y=y,
