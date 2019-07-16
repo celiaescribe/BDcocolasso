@@ -158,7 +158,8 @@ cross_validation_function.block_descent <- function(k,
 #' \item \code{sd.y} Standard deviation of y matrix
 #' }
 #' 
-#' @details It is highly recommended to use center.Z = TRUE for the algorithm to work in the case of missing data. 
+#' @details It is highly recommended to use center.Z = TRUE for the algorithm to work in the case of missing data. Otherwise 
+#' the algorithm will not work the way it is intended.
 #' It is recommended to use center.Z = TRUE, scale.Z = TRUE, center.y = TRUE and scale.y = TRUE for both convergence
 #' and interpretability reasons. The use of center.Z = TRUE in the additive error setting can be subject to discussion,
 #' as it may introduce bias in the algorithm.
@@ -231,6 +232,9 @@ blockwise_coordinate_descent <- function(Z,
   if(noise=="missing" && center.Z == FALSE){
     stop("When noise is equal to missing, it is required to center matrix Z. Use center.Z=TRUE.")
   }
+  if(scale.Z == FALSE){
+    warning("Is it recommended to use scale.Z equal to TRUE in order to obtain trustworthy results.")
+  }
   
   #General variables we are going to use in the function
   start = 1 + p1
@@ -254,6 +258,8 @@ blockwise_coordinate_descent <- function(Z,
   
   mean.Z = sapply(1:p, function(j)mean_without_NA(j,Z))
   sd.Z <- sapply(1:p, function(j)sd_without_NA_block(j,Z))
+  
+
   
   if (center.Z == TRUE){
     if (scale.Z == TRUE){

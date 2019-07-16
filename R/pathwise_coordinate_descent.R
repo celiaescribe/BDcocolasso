@@ -176,6 +176,9 @@ pathwise_coordinate_descent <- function(Z,
   if(noise=="missing" && center.Z == FALSE){
     stop("When noise is equal to missing, it is required to center matrix Z. Use center.Z=TRUE.")
   }
+  if(scale.Z == FALSE){
+    warning("Is it recommended to use scale.Z equal to TRUE in order to obtain trustworthy results.")
+  }
   
   ratio_matrix = NULL
   if (noise=="missing"){

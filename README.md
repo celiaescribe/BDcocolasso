@@ -57,8 +57,8 @@ simple CoCoLasso version, and in the Block-Descent-CoCoLasso version.
 The inputs vary according to the chosen algorithm setting, and according
 to the chosen noise setting.
 
-  - **CoCoLasso setting**: This method requires six inputs (let n be the
-    number of observations and p the number of X variables):
+  - **CoCoLasso setting**: This method requires seven inputs (let n be
+    the number of observations and p the number of X variables):
 
 <!-- end list -->
 
@@ -73,11 +73,13 @@ to the chosen noise setting.
     to specify the *tau* parameter, corresponding to the standard
     deviation of the additive error matrix. In the *missing* setting,
     nothing has to be specified.
-6.  **block**: Chosen setting. Here, *block* should be equal to *TRUE*.
+6.  **block**: Chosen setting. Here, *block* should be equal to *FALSE*.
+7.  **penalty**: Type of penalty chosen. It can be equal to *lasso* or
+    *SCAD* according to the chosen penalty setting.
 
 <!-- end list -->
 
-  - **BD-CoCoLasso setting**: This method requires six inputs (let n be
+  - **BD-CoCoLasso setting**: This method requires nine inputs (let n be
     the number of observations, p the number of X variables, p1 the
     number of uncorrupted variables and p2 the number of corrupted
     variables, with p1 + p2 = p):
@@ -100,6 +102,8 @@ to the chosen noise setting.
     deviation of the additive error matrix. In the *missing* setting,
     nothing has to be specified.
 8.  **block**: Chosen setting. Here, *block* should be equal to *TRUE*.
+9.  **penalty**: Type of penalty chosen. It can be equal to *lasso* or
+    *SCAD* according to the chosen penalty setting.
 
 ## Contact
 
