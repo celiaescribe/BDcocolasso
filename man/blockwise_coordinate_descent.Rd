@@ -73,7 +73,8 @@ list containing \itemize{
 Implement blockwise coordinate descent algorithm. Best penalty value is evaluated through cross-validation.
 }
 \details{
-It is highly recommended to use center.Z = TRUE for the algorithm to work in the case of missing data. 
+It is highly recommended to use center.Z = TRUE for the algorithm to work in the case of missing data. Otherwise 
+the algorithm will not work the way it is intended.
 It is recommended to use center.Z = TRUE, scale.Z = TRUE, center.y = TRUE and scale.y = TRUE for both convergence
 and interpretability reasons. The use of center.Z = TRUE in the additive error setting can be subject to discussion,
 as it may introduce bias in the algorithm.

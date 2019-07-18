@@ -96,14 +96,14 @@ y_predict.opt
 
 It is then possible to visualize the solution path of the coefficients:
 ```{r}
-plotCoef(fit_missing.lasso)
-plotCoef(fit_missing.SCAD)
+BDcocolasso::plotCoef(fit_missing.lasso)
+BDcocolasso::plotCoef(fit_missing.SCAD)
 ```
 
 It is also possible to visualize the mean-squared error for all values of lambda:
 ```{r}
-plotError(fit_missing.lasso)
-plotError(fit_missing.SCAD)
+BDcocolasso::plotError(fit_missing.lasso)
+BDcocolasso::plotError(fit_missing.SCAD)
 ```
 In red is the mean squared error (without the constant term, which is why we obtain negative values), and in black are the standard deviations for each error value.
 On each of the plots, the left dashed line represent the optimum lambda, while the right dashed line represent the lambda corresponding to the one-standard-error rule.
@@ -123,7 +123,8 @@ Let's fit CoCoLasso:
 ```{r}
 
 
-fit_additive = coco(Z=Z_additive,y=y_additive,n=n_additive,p=p_additive,center.Z = FALSE, step=100,K=4,mu=10,tau=0.3,etol = 1e-4,noise = "additive", block=FALSE, penalty="lasso")
+fit_additive.lasso = coco(Z=Z_additive,y=y_additive,n=n_additive,p=p_additive,center.Z = FALSE, scale.Z = FALSE, step=100,K=4,mu=10,tau=0.3,etol = 1e-4,noise = "additive", block=FALSE, penalty="lasso")
+fit_additive.SCAD = coco(Z=Z_additive,y=y_additive,n=n_additive,p=p_additive,center.Z = FALSE, scale.Z = FALSE, step=100,K=4,mu=10,tau=0.3,etol = 1e-4,noise = "additive", block=FALSE, penalty="SCAD")
 
 ```
 
@@ -131,11 +132,14 @@ Here, we do not center Z because it is not necessary and it might lead to introd
 
 We can plot coefficients and the mean-squared-error:
 ```{r}
-plotCoef(fit_additive)
-plotError(fit_additive)
+BDcocolasso::plotCoef(fit_additive.lasso)
+BDcocolasso::plotError(fit_additive.lasso)
+
+BDcocolasso::plotCoef(fit_additive.SCAD)
+BDcocolasso::plotError(fit_additive.SCAD)
 ```
 
-
+We cannot compare results obtained for the additive error setting and the missing data setting, as we did not scale Z in the additive error setting (although the results are not very different as we use scaled simulated data to start with). If scaling the corrupted matrix in the additive error setting, it is necessary to take into account that the impact of that scaling on the error parameter `tau` that we use in the model.
 
 ## Block-Descent CoCoLasso algorithm
 
@@ -159,7 +163,7 @@ n_additive <- dim(Z_additive)[1]
 p_additive <- dim(Z_additive)[2]
 y_additive = as.matrix(y_additive)
 
-fit_additive = coco(Z=Z_additive,y=y_additive,n=n_additive,p=p_additive,p1=p1,p2=p2,center.Z = FALSE, step=100,K=4,mu=10,tau=0.3,noise="additive",block=TRUE, penalty="lasso")
+fit_additive = coco(Z=Z_additive,y=y_additive,n=n_additive,p=p_additive,p1=p1,p2=p2,center.Z = FALSE, scale.Z = FALSE, step=100,K=4,mu=10,tau=0.3,noise="additive",block=TRUE, penalty="lasso")
 
 
 ```
@@ -169,22 +173,27 @@ It it also important to keep in mind that this algorithm has a relatively high c
 
 We can plot the coefficients and the error for the missing data scenario. Here we should expect to have 6 non-zero coefficients, with pairs of coefficient having similar values, since data was simulated with beta = c(3,2,0,0,1.5,0,...,0,1.5,0,0,2,3).
 ```{r}
-plotCoef(fit_missing)
-plotError(fit_missing)
-plotCoef(fit_additive)
-plotError(fit_additive)
+BDcocolasso::plotCoef(fit_missing)
+BDcocolasso::plotError(fit_missing)
+BDcocolasso::plotCoef(fit_additive)
+BDcocolasso::plotError(fit_additive)
 ```
 
 We can also use SCAD penalty for the Block-Descent-CoCoLasso :
 ```{r}
 fit_missing.SCAD = coco(Z=Z_missing,y=y_missing,n=n_missing,p=p_missing,p1=p1,p2=p2,step=100,K=4,mu=10,tau=NULL,noise="missing",block=TRUE, penalty="SCAD")
+
+fit_additive.SCAD = coco(Z=Z_additive,y=y_additive,n=n_additive,p=p_additive,p1=p1,p2=p2,center.Z = FALSE, scale.Z = FALSE, step=100,K=4,mu=10,tau=0.3,noise="additive",block=TRUE, penalty="SCAD")
 ```
 
 Once again, we get more erratic solution paths with slightly bigger coefficients.
 
 ```{r}
-plotCoef(fit_missing.SCAD)
-plotError(fit_missing.SCAD)
+BDcocolasso::plotCoef(fit_missing.SCAD)
+BDcocolasso::plotError(fit_missing.SCAD)
+
+BDcocolasso::plotCoef(fit_additive.SCAD)
+BDcocolasso::plotError(fit_additive.SCAD)
 ```
 
 We will note that here, due to the fact that there are only 3 coefficients that get activated, convergence is very quick to be reached, and we should select `lambda.opt` and not `lambda.sd` as a good estimate for the coefficient values. This would not be the case in a model where there are more activated coefficients with varying amplitude.

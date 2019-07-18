@@ -20,6 +20,9 @@ lambda_max.coordinate_descent <- function(Z,
   lambda
 }
 
+
+### FUNCTIONS USED TO PERFORM SCALING OF THE CORRUPTED MATRIX WHEN THERE IS MISSING DATA
+
 scale_manual <- function(j,Z){
   sd <- stats::sd(Z[,j])
   if (sd != 0){
@@ -58,6 +61,8 @@ scale_manual_with_sd <- function(j,Z,v){
     return (Z[,j])
   }
 }
+
+###CROSS VALIDATION FUNCTION USED IN THE BLOCKWISE COORDINATE DESCENT
 
 cross_validation_function.block_descent <- function(k,
                                                     Z,
@@ -232,8 +237,14 @@ blockwise_coordinate_descent <- function(Z,
   if(noise=="missing" && center.Z == FALSE){
     stop("When noise is equal to missing, it is required to center matrix Z. Use center.Z=TRUE.")
   }
-  if(scale.Z == FALSE){
-    warning("Is it recommended to use scale.Z equal to TRUE in order to obtain trustworthy results.")
+  if(scale.Z == FALSE && noise=='missing'){
+    warning("When noise is equal to missing, it is recommended to use scale.Z equal to TRUE in order 
+            to obtain trustworthy results.")
+  }
+  if(scale.Z == TRUE && noise=='additive'){
+    warning("When noise is equal to additive, it is recommended to use scale.Z equal to FALSE in order 
+            to obtain trustworthy results. Otherwise, the scaling should be taken into account
+            when introducing the error parameter as a function parameter.")
   }
   
   #General variables we are going to use in the function
