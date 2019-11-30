@@ -60,7 +60,7 @@ cv_covariance_matrices_block_descent_general <- function(K,
   
   mat_corrupted_additive <- mat[,start:(p1+p2)]
   mat_corrupted_missing <- mat[,(p1+p2+1):p]
-  cov_modified_additive <- 1/n*t(mat_corrupted_additive)%*%mat_corrupted_additive - ifelse(length(tau**2)==0,0,tau)**2*diag(p2)
+  cov_modified_additive <- 1/n*t(mat_corrupted_additive)%*%mat_corrupted_additive - tau**2*diag(p2)
   cov_modified_missing <- 1/n*t(mat_corrupted_missing)%*%mat_corrupted_missing / ratio_matrix
   sigma_global_corrupted_additive <- ADMM_proj(cov_modified_additive,mu=mu, etol = etol)$mat
   sigma_global_corrupted_missing <- ADMM_proj(cov_modified_missing,mu=mu, etol = etol)$mat
@@ -73,7 +73,7 @@ cv_covariance_matrices_block_descent_general <- function(K,
     
     #Calculating the nearest PSD cov matrix when we remove the kth fold, to resolve lasso problem during cross validation
     mat_train <- mat[-index,start:(p1+p2)]
-    cov_modified_train <- 1/n_without_fold*t(mat_train)%*%mat_train - ifelse(length(tau**2)==0,0,tau)**2*diag(p2)
+    cov_modified_train <- 1/n_without_fold*t(mat_train)%*%mat_train - tau**2*diag(p2)
     mat_cov_train <- ADMM_proj(cov_modified_train,mu=mu, etol = etol)$mat
     list_PSD_lasso_additive <- rlist::list.append(list_PSD_lasso_additive,mat_cov_train)
     
@@ -84,7 +84,7 @@ cv_covariance_matrices_block_descent_general <- function(K,
     
     #Calculating the nearest PSD cov matrix for the kth fold, to calculate the error on the problem solved without the kth fold
     mat_test <- mat[index,start:(p1+p2)]
-    cov_modified_test <- 1/n_one_fold*t(mat_test)%*%mat_test - ifelse(length(tau**2)==0,0,tau)**2*diag(p2)
+    cov_modified_test <- 1/n_one_fold*t(mat_test)%*%mat_test - tau**2*diag(p2)
     mat_cov_test <- ADMM_proj(cov_modified_test,mu=mu, etol = etol)$mat
     list_PSD_error_additive <- rlist::list.append(list_PSD_error_additive,mat_cov_test)
     
