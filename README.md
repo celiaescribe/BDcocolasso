@@ -120,11 +120,11 @@ to the chosen noise setting.
 
 ## Contact
 
-email : celia.escribe@polytechnique.edu
+email : celia.escribe@polytechnique.edu; tianyuan.lu@mail.mcgill.ca; karim.oualkacha@uqam.ca; celia.greenwood@mcgill.ca
 
 ## Credit
 
-We based this R package on the following articles :
+We were inspired by the following studies :
 
   - [Cocolasso for high dimensional error-in-variables
     regression](https://arxiv.org/pdf/1510.07123.pdf)
