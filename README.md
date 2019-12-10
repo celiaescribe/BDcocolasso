@@ -22,12 +22,12 @@ algorithm](https://arxiv.org/pdf/1510.07123.pdf). CoCoLASSO requires a
 computationally demanding positive semi-definite projection of the
 covariance matrix for a high dimensional feature set. In a very
 high-dimensional context where there are both corrupted and uncorrupted
-covariates and where the portion of corrupted features is small enough,
-we take advantage of the block descent minimization trick to develop a
+covariates and where the portion of corrupted features is relatively small,
+we take advantage of the block descent minimization to develop a
 more efficient algorithm called BDCoCoLasso. In an alternating block
 minimization algorithm, the CoCoLasso corrections are used when updating
 corrupted coefficient vectors, and a simple LASSO is used for the
-uncorrupted coefficient vectors. Both subproblems are convex and hence a
+uncorrupted coefficient vectors. Both sub-problems are convex and hence a
 global solution can be obtained, even though adaption of the
 cross-validation step requires care in this setting where there are
 products of corrupted and uncorrupted matrices.
@@ -105,13 +105,26 @@ to the chosen noise setting.
 9.  **penalty**: Type of penalty chosen. It can be equal to *lasso* or
     *SCAD* according to the chosen penalty setting.
 
+<!-- end list -->
+
+  - **Three-block BD-CoCoLasso setting**: This method handles a mixed error
+    setting where both additive error and missing data occur. This requires 
+    excecuting the function *generalcoco*. The required inputs are the same as
+    the **BD-CoCoLasso** setting except that **p2** stands for the number of
+    corrupted covariates measured with additive error and an additional parameter
+    **p3** stands for the number of corrupted covariates measured with missing 
+    data. It is essential in both settings that the covariates are sorted with
+    the uncorrupted covariates are in the first columns. In the Three-block
+    setting, the additive-error-containing covariates should precede the 
+    missing-data-containing covariates as well.
+
 ## Contact
 
-email : celia.escribe@polytechnique.edu
+email : celia.escribe@polytechnique.edu; tianyuan.lu@mail.mcgill.ca; karim.oualkacha@uqam.ca; celia.greenwood@mcgill.ca
 
 ## Credit
 
-We based this R package on the following articles :
+We were inspired by the following studies :
 
   - [Cocolasso for high dimensional error-in-variables
     regression](https://arxiv.org/pdf/1510.07123.pdf)

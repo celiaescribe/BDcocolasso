@@ -1,4 +1,4 @@
-#' Coco
+#' Generalized Coco
 #'
 #' Implement blockwise coordinate descent algorithm or CoCoLasso algorithm
 #'
@@ -7,7 +7,8 @@
 #' @param n Number of samples of the design matrix
 #' @param p Number of features of the matrix
 #' @param p1 Number of uncorrupted predictors (if dealing with block descent)
-#' @param p2 Number of corrupted predictors (if dealing with block descent)
+#' @param p2 Number of corrupted predictors containing additive error (if dealing with block descent)
+#' @param p3 Number of corrupted predictors containing missingness (if dealing with block descent)
 #' @param center.Z If TRUE, centers Z matrix without taking into account NAs values, and then change NAs to 0 value (in the
 #' missing data setting).
 #' @param scale.Z If TRUE, divides Z columns by their standard deviation
@@ -25,7 +26,6 @@
 #' with regard of the error values. For centered and scaled matrix, a value of \code{optTop} at 1e-5 usually works fine.
 #' @param earlyStopping_max Number of iterations allowed when the cross-validation error starts increasing. This parameter
 #' has an impact on computing speed, since iterations corresponding to increasing error are usually quite slow.
-#' @param noise Type of noise (additive or missing)
 #' @param block If TRUE, implements block descent CoCoLasso. If FALSE, implements simple CoCoLasso.
 #' @param penalty Type of penalty used : can be lasso penalty or SCAD penalty
 #' 
@@ -56,12 +56,13 @@
 #' @export
 #' 
 
-coco <- function(Z,
+generalcoco <- function(Z, 
                  y,
                  n,
                  p,
                  p1=NULL,
                  p2=NULL,
+                 p3=NULL, # both types of noise; removed noise parameter; removed block parameter since only BDCoCoLasso can handle this setting
                  center.Z = TRUE,
                  scale.Z = TRUE,
                  center.y = TRUE,
@@ -74,18 +75,16 @@ coco <- function(Z,
                  etol= 1e-4,
                  optTol = 1e-5,
                  earlyStopping_max = 10,
-                 noise=c("additive","missing"),
-                 block = TRUE,
                  penalty=c("lasso","SCAD")){
-
+  
   this.call <- match.call()
-  if(block){
-    fit <- BDcocolasso::blockwise_coordinate_descent(Z=Z,
+  fit <- blockwise_coordinate_descent_general(Z=Z,
                                                      y=y,
                                                      n=n,
                                                      p=p,
                                                      p1=p1,
                                                      p2=p2,
+                                                     p3=p3,
                                                      center.Z = center.Z,
                                                      scale.Z = scale.Z,
                                                      center.y = center.y,
@@ -98,28 +97,7 @@ coco <- function(Z,
                                                      etol = etol,
                                                      optTol = optTol,
                                                      earlyStopping_max = earlyStopping_max,
-                                                     noise = noise,
                                                      penalty=penalty)
-  }else{
-    fit <- BDcocolasso::pathwise_coordinate_descent(Z=Z,
-                                                     y=y,
-                                                     n=n,
-                                                     p=p,
-                                                     center.Z = center.Z,
-                                                     scale.Z = scale.Z,
-                                                     center.y = center.y,
-                                                     scale.y = scale.y,
-                                                     lambda.factor = lambda.factor,
-                                                     step = step,
-                                                     K = K,
-                                                     mu = mu,
-                                                     tau = tau,
-                                                     etol = etol,
-                                                     optTol = optTol,
-                                                     earlyStopping_max = earlyStopping_max,
-                                                     noise = noise,
-                                                     penalty=penalty)
-  }
   fit$call <- this.call
   class(fit) <- "coco"
   return(fit)

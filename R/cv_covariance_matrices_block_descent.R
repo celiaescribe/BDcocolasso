@@ -55,7 +55,7 @@ cv_covariance_matrices_block_descent <- function(K,
     
     #We calculate the global nearest PSD cov matrix and the global surrogate rho, when we take into account the whole data set
     
-    print("Doing the global data")
+    print("Processing the global data")
     mat_corrupted <- mat[,start:p]
     mat_uncorrupted <- mat[,1:p1]
     cov_modified <- 1/n*t(mat_corrupted)%*%mat_corrupted - tau**2*diag(p2)
@@ -65,7 +65,7 @@ cv_covariance_matrices_block_descent <- function(K,
     for (i in 1:K){
       # We calculate the necessary matrices for the cross validation
       
-      print(paste("Doing the",i,"fold"))
+      print(paste("Processing the",i,"fold"))
       index <- which(folds==i, arr.ind= TRUE)
       
       #Calculating the nearest PSD cov matrix when we remove the kth fold, to resolve lasso problem during cross validation
@@ -98,7 +98,7 @@ cv_covariance_matrices_block_descent <- function(K,
   else if (noise == "missing"){
     #We calculate the global nearest PSD cov matrix and the global surrogate rho, when we take into account the whole data set
     #mat_for_adjustment <- diag(probs*(1-probs),p,p) + (1-probs) %*% t(1 - probs)
-    print("Doing the global data")
+    print("Processing the global data")
     mat_corrupted <- mat[,start:p]
     mat_uncorrupted <- mat[,1:p1]
     cov_modified <- 1/n*t(mat_corrupted)%*%mat_corrupted / ratio_matrix
@@ -108,7 +108,7 @@ cv_covariance_matrices_block_descent <- function(K,
     for (i in 1:K){
       # We calculate the necessary matrices for the cross validation
       
-      print(paste("Doing the",i,"fold"))
+      print(paste("Processing the",i,"fold"))
       index <- which(folds==i, arr.ind= TRUE)
       
       #Calculating the nearest PSD cov matrix when we remove the kth fold, to resolve lasso problem during cross validation

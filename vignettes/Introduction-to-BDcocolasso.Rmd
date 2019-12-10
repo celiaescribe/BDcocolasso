@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 ## Quick Start
 
-We will use the simulated data which ships with the package and can be loaded via:
+We will use the simulated data which are provided in the package and can be loaded via:
 
 ```{r}
 library(BDcocolasso)
@@ -26,12 +26,12 @@ data("simulated_data_missing_block")
 data("simulated_data_additive_block")
 ```
 
-These datasets correspond to corrupted datasets in additive error setting and missing data setting, and to partially corrupted datasets in additive error setting and missing data setting. In the missing data setting, those datasets contain NAs values, whereas in the additive error setting, they do not contain NAs values but the covariates are measured with error. 
+These datasets correspond to corrupted datasets in the additive error setting and the missing data setting, and to partially corrupted datasets in additive error setting and missing data setting. In the missing data setting, those datasets contain NAs values, whereas in the additive error setting, they do not contain NAs values but the covariates are measured with additive error. 
 We will note that it is essential to know the standard deviation corresponding to the additive error matrix in the additive error setting, in order to run the CoCoLasso algorithm.
 
 ## CoCoLasso algorithm
 
-We can first perform classic CoCoLasso algorithm. To do that, it is important to note that the datasets must be converted to a matrix:
+We can first perform a classic CoCoLasso regression. To do that, it is important to note that the datasets must be converted to a matrix:
 
 ```{r}
 y_missing <- simulated_data_missing[,1]
@@ -42,8 +42,8 @@ p_missing <- dim(Z_missing)[2]
 y_missing = as.matrix(y_missing)
 ```
 
-We can then fit the CoCoLasso model to our data. It is important to specify the type of noise (additive or missing) and the use of CoCoLasso (block=FALSE) or BD-CoCoLasso (block=TRUE). Here, `noise` is equal to `missing` because we have NAs values in the dataset. 
-We can use two kinds of penalties : the classic lasso penalty (penalty="lasso") or the SCAD penalty (penalty="SCAD"). The latter should lead to less bias in the solution.
+We can then fit the CoCoLasso model using our data. It is important to specify the type of noise (additive or missing) and the use of CoCoLasso (block=FALSE) or BD-CoCoLasso (block=TRUE). Here, `noise` is equal to `missing` because we have NAs values in the dataset. 
+We can use two types of penalties : the classic lasso penalty (penalty="lasso") or the SCAD penalty (penalty="SCAD"). The latter should lead to less bias in the solution, when the signals are strong.
 ```{r}
 set.seed(1234567)
 fit_missing.lasso = coco(Z=Z_missing,y=y_missing,n=n_missing,p=p_missing,step=100,K=4,mu=10,tau=NULL, etol = 1e-4,noise = "missing",block=FALSE, penalty="lasso")
@@ -51,19 +51,19 @@ set.seed(1234567)
 fit_missing.SCAD = coco(Z=Z_missing,y=y_missing,n=n_missing,p=p_missing,step=100,K=4,mu=10,tau=NULL, etol = 1e-4,noise = "missing",block=FALSE, penalty="SCAD")
 ```
 
-It is possible to print the fitted object, so as to display the evolution of mean-squared error in function of lambda values:
+It is possible to print the fitted object, so as to display the evolution of mean-squared error as a function of the lambda values:
 ```{r}
 print(fit_missing.lasso)
 
 ```
 
-It is also possible to display the coefficients obtained for all values of lambda, or for specific values of lambda.
+It is also possible to display the coefficients obtained for all values of lambda, or for some specific values of lambda.
 ```{r}
 coef(fit_missing.lasso, s=fit_missing.lasso$lambda.opt)
 coef(fit_missing.SCAD, s=fit_missing.SCAD$lambda.opt)
 ```
 
-It is also possible to obtain a prediction for new covariates values. Let's simulate values following the same simulation pattern used to obtain Z_missing, and look at the obtained prediction. Default configuration is using coefficients for lambda.sd:
+It is also possible to obtain a prediction for new covariates. Let's simulate values following the same simulation pattern used to obtain Z_missing, and look at the obtained prediction. Default configuration is to use coefficients for lambda.sd:
 
 ```{r}
 cov = cov_autoregressive(p_missing)
@@ -86,9 +86,9 @@ y_predict.sd.SCAD <- predict(fit_missing.SCAD, newx = X, type="response")
 y_predict.sd.SCAD
 ```
 
-We can see that using the SCAD penalty leads to less bias.
+We can see that in this case using the SCAD penalty leads to less bias.
 
-It is also possible to specify the lambda value at which we wish to calculate the prediction:
+It is also possible to specify the lambda value with which we wish to perform the prediction:
 ```{r}
 y_predict.opt <- predict(fit_missing.lasso, newx = X, type="response", lambda.pred = fit_missing.lasso$lambda.opt)
 y_predict.opt
@@ -100,15 +100,15 @@ BDcocolasso::plotCoef(fit_missing.lasso)
 BDcocolasso::plotCoef(fit_missing.SCAD)
 ```
 
-It is also possible to visualize the mean-squared error for all values of lambda:
+It is also possible to visualize the mean squared error for all values of lambda:
 ```{r}
 BDcocolasso::plotError(fit_missing.lasso)
 BDcocolasso::plotError(fit_missing.SCAD)
 ```
-In red is the mean squared error (without the constant term, which is why we obtain negative values), and in black are the standard deviations for each error value.
-On each of the plots, the left dashed line represent the optimum lambda, while the right dashed line represent the lambda corresponding to the one-standard-error rule.
+The red stands for the mean squared error (without a constant term, which is why we obtain negative values), and the black depicts the standard deviation for each error value.
+On each of the plots, the left dashed line represents the optimal lambda, while the right dashed line represents the lambda corresponding to the one-standard-error rule.
 
-We can do the same with additive error setting (in the following we will show the use of the lasso penalty, although the SCAD penalty can also be used without any problem)
+We can do the same with additive error setting (in the following we will show the use of the lasso penalty, although the SCAD penalty can also be adopted)
 ```{r}
 y_additive <- simulated_data_additive[,1]
 Z_additive = simulated_data_additive[,2:dim(simulated_data_additive)[2]]
@@ -119,7 +119,7 @@ y_additive = as.matrix(y_additive)
 
 ```
 
-Let's fit CoCoLasso:
+Let's fit a CoCoLasso model:
 ```{r}
 
 
@@ -128,7 +128,7 @@ fit_additive.SCAD = coco(Z=Z_additive,y=y_additive,n=n_additive,p=p_additive,cen
 
 ```
 
-Here, we do not center Z because it is not necessary and it might lead to introducing bias, because of the additive error setting. It is very important to know (or estimate) \code{tau} parameter corresponding to the standard deviation of the error matrix. Without it, the algorithm cannot run. In our example with simulated data, \code{tau} is equal to `0.3`.
+Here, we do not center Z because it might lead to estimation bias, because of the additive error setting. It is very important to know (from literature or by estimating) \code{tau} parameter corresponding to the standard deviation of the error matrix. Without it, the algorithm cannot run. In our example with simulated data, \code{tau} is equal to `0.3`.
 
 We can plot coefficients and the mean-squared-error:
 ```{r}
@@ -139,11 +139,11 @@ BDcocolasso::plotCoef(fit_additive.SCAD)
 BDcocolasso::plotError(fit_additive.SCAD)
 ```
 
-We cannot compare results obtained for the additive error setting and the missing data setting, as we did not scale Z in the additive error setting (although the results are not very different as we use scaled simulated data to start with). If scaling the corrupted matrix in the additive error setting, it is necessary to take into account that the impact of that scaling on the error parameter `tau` that we use in the model.
+We cannot compare results obtained for the additive error setting and the missing data setting, as we did not scale Z in the additive error setting. If scaling was performed on the corrupted matrix in the additive error setting, it is necessary to take into account the impact of the scaling on the error parameter `tau` that we need to use in the model.
 
 ## Block-Descent CoCoLasso algorithm
 
-The BDCoCoLasso algorithms functions the same way. We can fit the model for both datasets. We have to be careful to use \code{block=TRUE}:
+We can fit the BDCoCoLasso model for both datasets using \code{block=TRUE}:
 ```{r}
 p1 <- 180
 p2 <- 20
@@ -168,10 +168,10 @@ fit_additive = coco(Z=Z_additive,y=y_additive,n=n_additive,p=p_additive,p1=p1,p2
 
 ```
 
-Note that the algorithm requires that the first p1 columns of Z be the uncorrupted covariates, and the last p2 columns be the corrupted covariates.
-It it also important to keep in mind that this algorithm has a relatively high computational cost. In the example given above, it is normal that code should run for a dozens seconds before obtaining a result. It also requires a big amount of memory when the number of features reaches the thousands.
+Note that the algorithm requires that the first p1 columns of Z be the uncorrupted covariates, and that the last p2 columns be the corrupted covariates.
+It it also important to keep in mind that this algorithm has a relatively high computational cost. In the example given above, it is normal that the code should run for a couple of minutes before obtaining a result. When the number of features reaches one thousand, the memory demand would be high.
 
-We can plot the coefficients and the error for the missing data scenario. Here we should expect to have 6 non-zero coefficients, with pairs of coefficient having similar values, since data was simulated with beta = c(3,2,0,0,1.5,0,...,0,1.5,0,0,2,3).
+We can plot the coefficients and the error for the missing data scenario. Here we should expect to have 6 non-zero coefficients, with pairs of coefficients having similar values, since data was simulated with beta = c(3,2,0,0,1.5,0,...,0,1.5,0,0,2,3).
 ```{r}
 BDcocolasso::plotCoef(fit_missing)
 BDcocolasso::plotError(fit_missing)
@@ -186,7 +186,7 @@ fit_missing.SCAD = coco(Z=Z_missing,y=y_missing,n=n_missing,p=p_missing,p1=p1,p2
 fit_additive.SCAD = coco(Z=Z_additive,y=y_additive,n=n_additive,p=p_additive,p1=p1,p2=p2,center.Z = FALSE, scale.Z = FALSE, step=100,K=4,mu=10,tau=0.3,noise="additive",block=TRUE, penalty="SCAD")
 ```
 
-Once again, we get more erratic solution paths with slightly bigger coefficients.
+Once again, we get more erratic solution paths with slightly larger coefficients.
 
 ```{r}
 BDcocolasso::plotCoef(fit_missing.SCAD)
@@ -196,6 +196,6 @@ BDcocolasso::plotCoef(fit_additive.SCAD)
 BDcocolasso::plotError(fit_additive.SCAD)
 ```
 
-We will note that here, due to the fact that there are only 3 coefficients that get activated, convergence is very quick to be reached, and we should select `lambda.opt` and not `lambda.sd` as a good estimate for the coefficient values. This would not be the case in a model where there are more activated coefficients with varying amplitude.
+We will note that here, due to the fact that there are only 3 coefficients that get activated, convergence should be very quick. We should select `lambda.opt` and not `lambda.sd` for getting good estimates for the coefficient values in this case. This would not be the case in a model where there are more activated coefficients with varying amplitude.
 
-One important remark : using too important missing rate may lead to a disfunctionement of the algorithms. If the error "eigen(W, symmetric=TRUE) : infinite or NaN values" appears, this may indicate that you used a matrix with too important missing rates. A good empirical threshold for missing values is 0.5.
+One important remark : using too high missing rate may lead to dysfunction of the algorithms. If the error "eigen(W, symmetric=TRUE) : infinite or NaN values" appears, this may indicate that you are using a matrix with too high missing rates. A good empirical threshold for missing values is 0.7.
