@@ -4,9 +4,16 @@
 \alias{lasso_covariance}
 \title{Lasso in covariance form}
 \usage{
-lasso_covariance(n, p, lambda, control = list(maxIter = 1000, optTol =
-  10^(-5), zeroThreshold = 10^(-6)), XX, Xy, beta.start,
-  penalty = c("lasso", "SCAD"))
+lasso_covariance(
+  n,
+  p,
+  lambda,
+  control = list(maxIter = 1000, optTol = 10^(-5), zeroThreshold = 10^(-6)),
+  XX,
+  Xy,
+  beta.start,
+  penalty = c("lasso", "SCAD")
+)
 }
 \arguments{
 \item{n}{Number of samples of the design matrix}
