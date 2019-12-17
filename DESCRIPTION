@@ -15,7 +15,7 @@ Suggests:
     testthat,
     knitr,
     rmarkdown
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Depends: R (>= 2.10)
 Imports: 
     emdbook,

@@ -68,7 +68,7 @@ cv_covariance_matrices_block_descent_general <- function(K,
   for (i in 1:K){
     # We calculate the necessary matrices for the cross validation
     
-    print(paste("Doing the",i,"fold"))
+    print(paste("Processing the",i,"fold"))
     index <- which(folds==i, arr.ind= TRUE)
     
     #Calculating the nearest PSD cov matrix when we remove the kth fold, to resolve lasso problem during cross validation

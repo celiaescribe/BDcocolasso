@@ -9,7 +9,7 @@
 The package implements penalized regression based on the CoCoLasso article. This penalized regression works for corrupted data sets, when covariates can be partially missing or measured with error. It also implements block descent penalized regression for a class of problem when there are both corrupted and uncorrupted features. The motivation of this last step is to reduce the computational need of this new penalization method when only a small percentage of features are corrupted.
 }
 \author{
-\strong{Maintainer}: Celia Escribe \email{celia.escribe@polytechnique.edu} (YOUR-ORCID-ID)
+\strong{Maintainer}: Celia Escribe \email{celia.escribe@polytechnique.edu} (\href{https://orcid.org/YOUR-ORCID-ID}{ORCID})
 
 }
 \keyword{internal}

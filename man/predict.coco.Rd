@@ -4,8 +4,14 @@
 \alias{predict.coco}
 \title{Make predictions from a coco object}
 \usage{
-\method{predict}{coco}(object, newx, s = NULL, lambda.pred = NULL,
-  type = c("response", "coefficients"), ...)
+\method{predict}{coco}(
+  object,
+  newx,
+  s = NULL,
+  lambda.pred = NULL,
+  type = c("response", "coefficients"),
+  ...
+)
 }
 \arguments{
 \item{object}{Fitted \code{coco} model object}

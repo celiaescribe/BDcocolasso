@@ -26,7 +26,6 @@
 #' with regard of the error values. For centered and scaled matrix, a value of \code{optTop} at 1e-5 usually works fine.
 #' @param earlyStopping_max Number of iterations allowed when the cross-validation error starts increasing. This parameter
 #' has an impact on computing speed, since iterations corresponding to increasing error are usually quite slow.
-#' @param block If TRUE, implements block descent CoCoLasso. If FALSE, implements simple CoCoLasso.
 #' @param penalty Type of penalty used : can be lasso penalty or SCAD penalty
 #' 
 #' @return list containing \itemize{

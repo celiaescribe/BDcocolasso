@@ -4,8 +4,7 @@
 \alias{plotError}
 \title{Plot solution path}
 \usage{
-plotError(object, linetype = "dashed", col = "black",
-  colLine = "red")
+plotError(object, linetype = "dashed", col = "black", colLine = "red")
 }
 \arguments{
 \item{object}{A fitted \code{cocolasso} object as produced by \code{pathwise_coordinate_descent()} or 

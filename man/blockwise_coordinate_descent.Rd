@@ -4,12 +4,28 @@
 \alias{blockwise_coordinate_descent}
 \title{Blockwise coordinate descent}
 \usage{
-blockwise_coordinate_descent(Z, y, n, p, p1, p2, center.Z = TRUE,
-  scale.Z = TRUE, center.y = TRUE, scale.y = TRUE,
+blockwise_coordinate_descent(
+  Z,
+  y,
+  n,
+  p,
+  p1,
+  p2,
+  center.Z = TRUE,
+  scale.Z = TRUE,
+  center.y = TRUE,
+  scale.y = TRUE,
   lambda.factor = ifelse(dim(Z)[1] < dim(Z)[2], 0.01, 0.001),
-  step = 100, K = 4, mu = 10, tau = NULL, etol = 1e-04,
-  optTol = 1e-05, earlyStopping_max = 10, noise = c("additive",
-  "missing"), penalty = c("lasso", "SCAD"))
+  step = 100,
+  K = 4,
+  mu = 10,
+  tau = NULL,
+  etol = 1e-04,
+  optTol = 1e-05,
+  earlyStopping_max = 10,
+  noise = c("additive", "missing"),
+  penalty = c("lasso", "SCAD")
+)
 }
 \arguments{
 \item{Z}{Corrupted design matrix (with additive error or missing data)}

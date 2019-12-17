@@ -4,8 +4,14 @@
 \alias{ADMM_proj}
 \title{ADMM algorithm}
 \usage{
-ADMM_proj(mat, epsilon = 1e-04, mu = 10, it.max = 1000,
-  etol = 1e-04, etol_distance = 1e-04)
+ADMM_proj(
+  mat,
+  epsilon = 1e-04,
+  mu = 10,
+  it.max = 1000,
+  etol = 1e-04,
+  etol_distance = 1e-04
+)
 }
 \arguments{
 \item{mat}{Matrix to be projected}
