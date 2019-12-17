@@ -72,8 +72,6 @@ with regard of the error values. For centered and scaled matrix, a value of \cod
 has an impact on computing speed, since iterations corresponding to increasing error are usually quite slow.}
 
 \item{penalty}{Type of penalty used : can be lasso penalty or SCAD penalty}
-
-\item{block}{If TRUE, implements block descent CoCoLasso. If FALSE, implements simple CoCoLasso.}
 }
 \value{
 list containing \itemize{
