@@ -51,7 +51,7 @@ updateB_maxNorm_hmLasso=function(Akp1,Lk,S_paired,mu,W){
 #' 
 #' @examples  
 #' M = matrix(-1,20,20)
-#' mat_proj <- BDcocolasso::HM_proj(mat=M)
+#' mat_proj <- BDcocolasso::HM_proj(sigmaHat=M)
 #' 
 #' @seealso \url{https://arxiv.org/pdf/1811.00255.pdf}
 #' @export
