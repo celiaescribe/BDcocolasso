@@ -13,6 +13,7 @@
 #' @param tau Standard error of the additive error matrix when the chosen setting is the additive error setting
 #' @param ratio_matrix Observation matrix used in the missing data setting
 #' @param etol Tolerance used in the ADMM algorithm
+#' @param mode ADMM or HM
 #' 
 #' @return list containing \itemize{
 #' \item \code{sigma_global} projected matrix for \code{mat}
@@ -36,7 +37,8 @@ cv_covariance_matrices_block_descent_general <- function(K,
                                                  mu,
                                                  tau=NULL,
                                                  ratio_matrix=NULL,
-                                                 etol=1e-4){
+                                                 etol=1e-4,
+                                                 mode="ADMM"){
   
   n = nrow(mat)
   p = ncol(mat)
@@ -62,8 +64,14 @@ cv_covariance_matrices_block_descent_general <- function(K,
   mat_corrupted_missing <- mat[,(p1+p2+1):p]
   cov_modified_additive <- 1/n*t(mat_corrupted_additive)%*%mat_corrupted_additive - tau**2*diag(p2)
   cov_modified_missing <- 1/n*t(mat_corrupted_missing)%*%mat_corrupted_missing / ratio_matrix
-  sigma_global_corrupted_additive <- ADMM_proj(cov_modified_additive,mu=mu, etol = etol)$mat
-  sigma_global_corrupted_missing <- ADMM_proj(cov_modified_missing,mu=mu, etol = etol)$mat
+  if (mode=="ADMM") {
+    sigma_global_corrupted_additive <- ADMM_proj(cov_modified_additive,mu=mu, etol = etol)$mat
+    sigma_global_corrupted_missing <- ADMM_proj(cov_modified_missing,mu=mu, etol = etol)$mat
+  }
+  if (mode=="HM") {
+    sigma_global_corrupted_additive <- HM_proj(sigmaHat = cov_modified_additive,R=ratio_matrix[start:(p1+p2),start:(p1+p2)],mu=mu, tolerance  = etol)
+    sigma_global_corrupted_missing <- HM_proj(sigmaHat = cov_modified_missing,R=ratio_matrix[(p1+p2+1):p,(p1+p2+1):p],mu=mu, tolerance = etol)
+  }
   
   for (i in 1:K){
     # We calculate the necessary matrices for the cross validation
@@ -74,23 +82,44 @@ cv_covariance_matrices_block_descent_general <- function(K,
     #Calculating the nearest PSD cov matrix when we remove the kth fold, to resolve lasso problem during cross validation
     mat_train <- mat[-index,start:(p1+p2)]
     cov_modified_train <- 1/n_without_fold*t(mat_train)%*%mat_train - tau**2*diag(p2)
-    mat_cov_train <- ADMM_proj(cov_modified_train,mu=mu, etol = etol)$mat
+    if (mode=="ADMM") {
+      mat_cov_train <- ADMM_proj(cov_modified_train,mu=mu, etol = etol)$mat
+    }
+    if (mode=="HM") {
+      mat_cov_train <- HM_proj(sigmaHat = cov_modified_train,R=ratio_matrix[start:(p1+p2),start:(p1+p2)],mu = mu, tolerance = etol)
+    }
     list_PSD_lasso_additive <- rlist::list.append(list_PSD_lasso_additive,mat_cov_train)
     
     mat_train <- mat[-index,(p1+p2+1):p]
     cov_modified_train <- 1/n_without_fold*t(mat_train)%*%mat_train / ratio_matrix
-    mat_cov_train <- ADMM_proj(cov_modified_train,mu=mu, etol = etol)$mat
+    if (mode=="ADMM") {
+      mat_cov_train <- ADMM_proj(cov_modified_train,mu=mu, etol = etol)$mat
+    }
+    if (mode=="HM") {
+      mat_cov_train <- HM_proj(sigmaHat = cov_modified_train,R=ratio_matrix[(p1+p2+1):p,(p1+p2+1):p],mu = mu, tolerance = etol)
+    }
     list_PSD_lasso_missing <- rlist::list.append(list_PSD_lasso_missing,mat_cov_train)
     
     #Calculating the nearest PSD cov matrix for the kth fold, to calculate the error on the problem solved without the kth fold
     mat_test <- mat[index,start:(p1+p2)]
     cov_modified_test <- 1/n_one_fold*t(mat_test)%*%mat_test - tau**2*diag(p2)
-    mat_cov_test <- ADMM_proj(cov_modified_test,mu=mu, etol = etol)$mat
+    if (mode=="ADMM") {
+      mat_cov_test <- ADMM_proj(cov_modified_test,mu=mu, etol = etol)$mat
+    }
+    if (mode=="HM") {
+      mat_cov_test <- HM_proj(sigmaHat = cov_modified_test,R=ratio_matrix[start:(p1+p2),start:(p1+p2)],mu = mu, tolerance = etol)
+    }
     list_PSD_error_additive <- rlist::list.append(list_PSD_error_additive,mat_cov_test)
     
     mat_test <- mat[index,(p1+p2+1):p]
     cov_modified_test <- 1/n_one_fold*t(mat_test)%*%mat_test / ratio_matrix
     mat_cov_test <- ADMM_proj(cov_modified_test,mu=mu, etol = etol)$mat
+    if (mode=="ADMM") {
+      mat_cov_test <- ADMM_proj(cov_modified_test,mu=mu, etol = etol)$mat
+    }
+    if (mode=="HM") {
+      mat_cov_test <- HM_proj(sigmaHat = cov_modified_test,R=ratio_matrix[(p1+p2+1):p,(p1+p2+1):p],mu = mu, tolerance = etol)
+    }
     list_PSD_error_missing <- rlist::list.append(list_PSD_error_missing,mat_cov_test)
     
     #Calculating the cov matrix when we remove the kth fold, to resolve lasso problem during cross validation

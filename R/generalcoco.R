@@ -27,6 +27,7 @@
 #' @param earlyStopping_max Number of iterations allowed when the cross-validation error starts increasing. This parameter
 #' has an impact on computing speed, since iterations corresponding to increasing error are usually quite slow.
 #' @param penalty Type of penalty used : can be lasso penalty or SCAD penalty
+#' @param mode ADMM or HM
 #' 
 #' @return list containing \itemize{
 #' \item \code{lambda.opt} optimal value of lambda corresponding to minimum error
@@ -74,7 +75,8 @@ generalcoco <- function(Z,
                  etol= 1e-4,
                  optTol = 1e-5,
                  earlyStopping_max = 10,
-                 penalty=c("lasso","SCAD")){
+                 penalty=c("lasso","SCAD"),
+                 mode="ADMM"){
   
   this.call <- match.call()
   fit <- blockwise_coordinate_descent_general(Z=Z,
@@ -96,7 +98,8 @@ generalcoco <- function(Z,
                                                      etol = etol,
                                                      optTol = optTol,
                                                      earlyStopping_max = earlyStopping_max,
-                                                     penalty=penalty)
+                                                     penalty=penalty,
+                                              mode=mode)
   fit$call <- this.call
   class(fit) <- "coco"
   return(fit)

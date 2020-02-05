@@ -35,6 +35,11 @@ list containing \itemize{
 \description{
 Finds the nearest positive semi-definite matrix with respect to the max norm
 }
+\examples{
+M = matrix(-1,20,20)
+mat_proj <- BDcocolasso::ADMM_proj(mat=M)$mat
+
+}
 \seealso{
 \url{https://web.stanford.edu/~boyd/papers/pdf/admm_distr_stats.pdf}
 }

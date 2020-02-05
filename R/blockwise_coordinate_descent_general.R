@@ -186,6 +186,7 @@ cross_validation_function.block_descent_general <- function(k,
 #' @param optTol Tolerance parameter for the convergence of the error in the pathwise coordinate descent
 #' @param earlyStopping_max Number of iterations allowed when error starts increasing
 #' @param penalty Type of penalty used : can be lasso penalty or SCAD penalty
+#' @param mode ADMM or HM
 #' 
 #' @return list containing \itemize{
 #' \item \code{lambda.opt} optimal value of lambda corresponding to minimum error
@@ -234,7 +235,8 @@ blockwise_coordinate_descent_general <- function(Z,
                                          etol= 1e-4,
                                          optTol = 1e-5,
                                          earlyStopping_max = 10,
-                                         penalty=c("lasso","SCAD")){
+                                         penalty=c("lasso","SCAD"),
+                                         mode="ADMM"){
   
   nrows = nrow(Z)
   ncols = ncol(Z)
@@ -356,7 +358,7 @@ blockwise_coordinate_descent_general <- function(Z,
   
   ### Creating the K matrices we are going to use for cross validation
   output = cv_covariance_matrices_block_descent_general(K=K, mat=Z, y=y, p=p, p1=p1, p2=p2, p3=p3, mu=mu, 
-                                                tau=tau, ratio_matrix = ratio_matrix, etol=etol)
+                                                tau=tau, ratio_matrix = ratio_matrix, etol=etol, mode=mode)
   list_PSD_lasso_additive = output$list_PSD_lasso_additive
   list_PSD_error_additive = output$list_PSD_error_additive
   list_PSD_lasso_missing = output$list_PSD_lasso_missing

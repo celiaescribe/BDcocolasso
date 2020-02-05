@@ -12,6 +12,7 @@
 #' @param ratio_matrix Observation matrix used in the missing data setting
 #' @param etol Tolerance used in the ADMM algorithm
 #' @param noise Type of setting chosen : additive or missing
+#' @param mode ADMM or HM
 
 #' 
 #' @return list containing \itemize{
@@ -34,7 +35,8 @@ cv_covariance_matrices <- function(K,
                                    tau=NULL,
                                    ratio_matrix=NULL,
                                    etol=1e-4,
-                                   noise=c("additive","missing")){
+                                   noise=c("additive","missing"),
+                                   mode="ADMM"){
 
   
   # calculate the K nearest PSD covariance matrices 
@@ -63,7 +65,12 @@ cv_covariance_matrices <- function(K,
     
     print("Doing the global data")
     cov_modified <- 1/n*t(mat)%*%mat - tau**2*diag(p)
-    sigma_global <- ADMM_proj(cov_modified,mu=mu, etol = etol)$mat
+    if (mode=="ADMM") {
+      sigma_global <- ADMM_proj(cov_modified,mu=mu, etol = etol)$mat
+    }
+    if (mode=="HM") {
+      sigma_global <- HM_proj(sigmaHat = cov_modified,R=ratio_matrix,mu=mu, tolerance = etol)
+    }
     rho_global <- t(mat)%*%y/n
     
     for (i in 1:K){
@@ -75,13 +82,23 @@ cv_covariance_matrices <- function(K,
       #Calculating the nearest PSD cov matrix when we remove the kth fold, to resolve lasso problem during cross validation
       mat_train <- mat[-index,]
       cov_modified_train <- 1/n_without_fold*t(mat_train)%*%mat_train - tau**2*diag(p)
-      mat_cov_train <- ADMM_proj(cov_modified_train,mu=mu, etol = etol)$mat
+      if (mode=="ADMM") {
+        mat_cov_train <- ADMM_proj(cov_modified_train,mu=mu, etol = etol)$mat
+      }
+      if (mode=="HM") {
+        mat_cov_train <- HM_proj(sigmaHat = cov_modified_train,R=ratio_matrix,mu=mu, tolerance = etol)
+      }
       list_matrices_lasso <- rlist::list.append(list_matrices_lasso,mat_cov_train)
       
       #Calculating the nearest PSD cov matrix for the kth fold, to calculate the error on the problem solved without the kth fold
       mat_test <- mat[index,]
       cov_modified_test <- 1/n_one_fold*t(mat_test)%*%mat_test - tau**2*diag(p)
-      mat_cov_test <- ADMM_proj(cov_modified_test,mu=mu, etol = etol)$mat
+      if (mode=="ADMM") {
+        mat_cov_test <- ADMM_proj(cov_modified_test,mu=mu, etol = etol)$mat
+      }
+      if (mode=="HM") {
+        mat_cov_test <- HM_proj(sigmaHat = cov_modified_test,R=ratio_matrix,mu=mu, tolerance = etol)
+      }
       list_matrices_error <- rlist::list.append(list_matrices_error,mat_cov_test)
       
       #Calculating the surrogate rho when we remove the kth fold, to resolve lasso problem during cross validation
@@ -102,7 +119,12 @@ cv_covariance_matrices <- function(K,
     #mat_for_adjustment <- diag(probs*(1-probs),p,p) + (1-probs) %*% t(1 - probs)
     print("Doing the global data")
     cov_modified <- 1/n*t(mat)%*%mat / ratio_matrix
-    sigma_global <- ADMM_proj(cov_modified,mu=mu, etol = etol)$mat
+    if (mode=="ADMM") {
+      sigma_global <- ADMM_proj(cov_modified,mu=mu, etol = etol)$mat
+    }
+    if (mode=="HM") {
+      sigma_global <- HM_proj(sigmaHat = cov_modified,R=ratio_matrix,mu=mu, tolerance = etol)
+    }
     rho_global <- 1/n*t(mat)%*%y/diag(ratio_matrix)
     
     for (i in 1:K){
@@ -115,14 +137,24 @@ cv_covariance_matrices <- function(K,
       mat_train <- mat[-index,]
       # cov_modified_train <- 1/n_without_fold*t(train_mat)%*%train_mat / mat_for_adjustment
       cov_modified_train <- 1/n_without_fold*t(mat_train)%*%mat_train / ratio_matrix
-      mat_cov_train <- ADMM_proj(cov_modified_train,mu=mu, etol = etol)$mat
+      if (mode=="ADMM") {
+        mat_cov_train <- ADMM_proj(cov_modified_train,mu=mu, etol = etol)$mat
+      }
+      if (mode=="HM") {
+        mat_cov_train <- HM_proj(sigmaHat = cov_modified_train,R=ratio_matrix,mu=mu, tolerance = etol)
+      }
       list_matrices_lasso <- rlist::list.append(list_matrices_lasso,mat_cov_train)
       
       #Calculating the nearest PSD cov matrix for the kth fold, to calculate the error on the problem solved without the kth fold
       mat_test <- mat[index,]
       # cov_modified_test <- 1/n_one_fold*t(test_mat)%*%test_mat / mat_for_adjustment
       cov_modified_test <- 1/n_one_fold*t(mat_test)%*%mat_test / ratio_matrix
-      mat_cov_test <- ADMM_proj(cov_modified_test,mu=mu, etol = etol)$mat
+      if (mode=="ADMM") {
+        mat_cov_test <- ADMM_proj(cov_modified_test,mu=mu, etol = etol)$mat
+      }
+      if (mode=="HM") {
+        mat_cov_test <- HM_proj(sigmaHat = cov_modified_test,R=ratio_matrix,mu=mu, tolerance = etol)
+      }
       list_matrices_error <- rlist::list.append(list_matrices_error,mat_cov_test)
       
       #Calculating the surrogate rho when we remove the kth fold, to resolve lasso problem during cross validation

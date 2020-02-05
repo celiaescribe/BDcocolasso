@@ -147,6 +147,7 @@ cross_validation_function.block_descent <- function(k,
 #' @param earlyStopping_max Number of iterations allowed when error starts increasing
 #' @param noise Type of noise (additive or missing)
 #' @param penalty Type of penalty used : can be lasso penalty or SCAD penalty
+#' @param mode ADMM or HM
 #' 
 #' @return list containing \itemize{
 #' \item \code{lambda.opt} optimal value of lambda corresponding to minimum error
@@ -195,7 +196,8 @@ blockwise_coordinate_descent <- function(Z,
                                          optTol = 1e-5,
                                          earlyStopping_max = 10,
                                          noise=c("additive","missing"),
-                                         penalty=c("lasso","SCAD")){
+                                         penalty=c("lasso","SCAD"),
+                                         mode="ADMM"){
   
   nrows = nrow(Z)
   ncols = ncol(Z)
@@ -317,7 +319,7 @@ blockwise_coordinate_descent <- function(Z,
   
   ### Creating the K matrices we are going to use for cross validation
   output = cv_covariance_matrices_block_descent(K=K, mat=Z, y=y, p=p, p1=p1, p2=p2, mu=mu, 
-                                                tau=tau, ratio_matrix = ratio_matrix, etol=etol, noise = noise)
+                                                tau=tau, ratio_matrix = ratio_matrix, etol=etol, noise = noise, mode=mode)
   list_PSD_lasso = output$list_PSD_lasso
   list_PSD_error = output$list_PSD_error
   list_sigma_lasso = output$list_sigma_lasso

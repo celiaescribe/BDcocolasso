@@ -24,7 +24,8 @@ blockwise_coordinate_descent_general(
   etol = 1e-04,
   optTol = 1e-05,
   earlyStopping_max = 10,
-  penalty = c("lasso", "SCAD")
+  penalty = c("lasso", "SCAD"),
+  mode = "ADMM"
 )
 }
 \arguments{
@@ -68,6 +69,8 @@ missing data setting).}
 \item{earlyStopping_max}{Number of iterations allowed when error starts increasing}
 
 \item{penalty}{Type of penalty used : can be lasso penalty or SCAD penalty}
+
+\item{mode}{ADMM or HM}
 }
 \value{
 list containing \itemize{

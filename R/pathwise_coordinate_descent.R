@@ -91,6 +91,7 @@ cross_validation_function <- function(k,
 #' @param earlyStopping_max Number of iterations allowed when error starts increasing
 #' @param noise Type of noise (additive or missing)
 #' @param penalty Type of penalty used : can be lasso penalty or SCAD penalty
+#' @param mode ADMM or HM
 #' 
 #' @return list containing \itemize{
 #' \item \code{lambda.opt} optimal value of lambda corresponding to minimum error
@@ -137,7 +138,8 @@ pathwise_coordinate_descent <- function(Z,
                                         optTol = 1e-10,
                                         earlyStopping_max = 10,
                                         noise=c("additive","missing"),
-                                        penalty=c("lasso","SCAD")){
+                                        penalty=c("lasso","SCAD"),
+                                        mode="ADMM"){
   
   
   nrows = nrow(Z)
@@ -259,7 +261,7 @@ pathwise_coordinate_descent <- function(Z,
   matrix_beta <- matrix(0,step,p)
   
   ### Creating the K matrices we are going to use for cross validation
-  output = cv_covariance_matrices(K=K, mat=Z, y=y, p=p, mu=mu, tau=tau, ratio_matrix = ratio_matrix, etol=etol, noise = noise)
+  output = cv_covariance_matrices(K=K, mat=Z, y=y, p=p, mu=mu, tau=tau, ratio_matrix = ratio_matrix, etol=etol, noise = noise, mode=mode)
   list_matrices_lasso = output$list_matrices_lasso
   list_matrices_error = output$list_matrices_error
   list_rho_lasso = output$list_rho_lasso
