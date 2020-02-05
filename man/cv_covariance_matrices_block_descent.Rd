@@ -15,7 +15,8 @@ cv_covariance_matrices_block_descent(
   tau = NULL,
   ratio_matrix = NULL,
   etol = 1e-04,
-  noise = c("additive", "missing")
+  noise = c("additive", "missing"),
+  mode = "ADMM"
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ cv_covariance_matrices_block_descent(
 \item{etol}{Tolerance used in the ADMM algorithm}
 
 \item{noise}{Type of setting chosen : additive or missing}
+
+\item{mode}{ADMM or HM}
 }
 \value{
 list containing \itemize{

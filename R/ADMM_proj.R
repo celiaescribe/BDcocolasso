@@ -31,7 +31,7 @@ l1proj<-function(v, b){
 #' \item \code{df_ADMM} dataframe containing parameters of the ADMM algorithm for each iteration of the algorithm
 #' }
 #' 
-#' @example 
+#' @examples 
 #' M = matrix(-1,20,20)
 #' mat_proj <- BDcocolasso::ADMM_proj(mat=M)$mat
 #' 

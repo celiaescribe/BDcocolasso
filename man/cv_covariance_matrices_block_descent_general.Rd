@@ -15,7 +15,8 @@ cv_covariance_matrices_block_descent_general(
   mu,
   tau = NULL,
   ratio_matrix = NULL,
-  etol = 1e-04
+  etol = 1e-04,
+  mode = "ADMM"
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ cv_covariance_matrices_block_descent_general(
 \item{ratio_matrix}{Observation matrix used in the missing data setting}
 
 \item{etol}{Tolerance used in the ADMM algorithm}
+
+\item{mode}{ADMM or HM}
 }
 \value{
 list containing \itemize{

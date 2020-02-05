@@ -24,7 +24,8 @@ generalcoco(
   etol = 1e-04,
   optTol = 1e-05,
   earlyStopping_max = 10,
-  penalty = c("lasso", "SCAD")
+  penalty = c("lasso", "SCAD"),
+  mode = "ADMM"
 )
 }
 \arguments{
@@ -72,6 +73,8 @@ with regard of the error values. For centered and scaled matrix, a value of \cod
 has an impact on computing speed, since iterations corresponding to increasing error are usually quite slow.}
 
 \item{penalty}{Type of penalty used : can be lasso penalty or SCAD penalty}
+
+\item{mode}{ADMM or HM}
 }
 \value{
 list containing \itemize{

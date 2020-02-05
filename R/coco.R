@@ -28,6 +28,7 @@
 #' @param noise Type of noise (additive or missing)
 #' @param block If TRUE, implements block descent CoCoLasso. If FALSE, implements simple CoCoLasso.
 #' @param penalty Type of penalty used : can be lasso penalty or SCAD penalty
+#' @param mode ADMM or HM
 #' 
 #' @return list containing \itemize{
 #' \item \code{lambda.opt} optimal value of lambda corresponding to minimum error
@@ -76,7 +77,8 @@ coco <- function(Z,
                  earlyStopping_max = 10,
                  noise=c("additive","missing"),
                  block = TRUE,
-                 penalty=c("lasso","SCAD")){
+                 penalty=c("lasso","SCAD"),
+                 mode="ADMM"){
 
   this.call <- match.call()
   if(block){
@@ -99,7 +101,8 @@ coco <- function(Z,
                                                      optTol = optTol,
                                                      earlyStopping_max = earlyStopping_max,
                                                      noise = noise,
-                                                     penalty=penalty)
+                                                     penalty=penalty,
+                                                     mode=mode)
   }else{
     fit <- BDcocolasso::pathwise_coordinate_descent(Z=Z,
                                                      y=y,
@@ -118,7 +121,8 @@ coco <- function(Z,
                                                      optTol = optTol,
                                                      earlyStopping_max = earlyStopping_max,
                                                      noise = noise,
-                                                     penalty=penalty)
+                                                     penalty=penalty,
+                                                    mode=mode)
   }
   fit$call <- this.call
   class(fit) <- "coco"
