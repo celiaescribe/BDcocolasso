@@ -69,8 +69,8 @@ cv_covariance_matrices_block_descent_general <- function(K,
     sigma_global_corrupted_missing <- ADMM_proj(cov_modified_missing,mu=mu, etol = etol)$mat
   }
   if (mode=="HM") {
-    sigma_global_corrupted_additive <- HM_proj(sigmaHat = cov_modified_additive,R=ratio_matrix[start:(p1+p2),start:(p1+p2)],mu=mu, tolerance  = etol)
-    sigma_global_corrupted_missing <- HM_proj(sigmaHat = cov_modified_missing,R=ratio_matrix[(p1+p2+1):p,(p1+p2+1):p],mu=mu, tolerance = etol)
+    sigma_global_corrupted_additive <- HM_proj(sigmaHat = cov_modified_additive,mu=mu, tolerance  = etol)
+    sigma_global_corrupted_missing <- HM_proj(sigmaHat = cov_modified_missing,R=ratio_matrix,mu=mu, tolerance = etol)
   }
   
   for (i in 1:K){
@@ -86,7 +86,7 @@ cv_covariance_matrices_block_descent_general <- function(K,
       mat_cov_train <- ADMM_proj(cov_modified_train,mu=mu, etol = etol)$mat
     }
     if (mode=="HM") {
-      mat_cov_train <- HM_proj(sigmaHat = cov_modified_train,R=ratio_matrix[start:(p1+p2),start:(p1+p2)],mu = mu, tolerance = etol)
+      mat_cov_train <- HM_proj(sigmaHat = cov_modified_train,mu = mu, tolerance = etol)
     }
     list_PSD_lasso_additive <- rlist::list.append(list_PSD_lasso_additive,mat_cov_train)
     
@@ -96,7 +96,7 @@ cv_covariance_matrices_block_descent_general <- function(K,
       mat_cov_train <- ADMM_proj(cov_modified_train,mu=mu, etol = etol)$mat
     }
     if (mode=="HM") {
-      mat_cov_train <- HM_proj(sigmaHat = cov_modified_train,R=ratio_matrix[(p1+p2+1):p,(p1+p2+1):p],mu = mu, tolerance = etol)
+      mat_cov_train <- HM_proj(sigmaHat = cov_modified_train,R=ratio_matrix,mu = mu, tolerance = etol)
     }
     list_PSD_lasso_missing <- rlist::list.append(list_PSD_lasso_missing,mat_cov_train)
     
@@ -107,7 +107,7 @@ cv_covariance_matrices_block_descent_general <- function(K,
       mat_cov_test <- ADMM_proj(cov_modified_test,mu=mu, etol = etol)$mat
     }
     if (mode=="HM") {
-      mat_cov_test <- HM_proj(sigmaHat = cov_modified_test,R=ratio_matrix[start:(p1+p2),start:(p1+p2)],mu = mu, tolerance = etol)
+      mat_cov_test <- HM_proj(sigmaHat = cov_modified_test,mu = mu, tolerance = etol)
     }
     list_PSD_error_additive <- rlist::list.append(list_PSD_error_additive,mat_cov_test)
     
@@ -118,7 +118,7 @@ cv_covariance_matrices_block_descent_general <- function(K,
       mat_cov_test <- ADMM_proj(cov_modified_test,mu=mu, etol = etol)$mat
     }
     if (mode=="HM") {
-      mat_cov_test <- HM_proj(sigmaHat = cov_modified_test,R=ratio_matrix[(p1+p2+1):p,(p1+p2+1):p],mu = mu, tolerance = etol)
+      mat_cov_test <- HM_proj(sigmaHat = cov_modified_test,R=ratio_matrix,mu = mu, tolerance = etol)
     }
     list_PSD_error_missing <- rlist::list.append(list_PSD_error_missing,mat_cov_test)
     
